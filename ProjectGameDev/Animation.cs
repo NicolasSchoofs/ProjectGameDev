@@ -12,8 +12,9 @@ namespace ProjectGameDev
     {
         public AnimationFrame CurrentFrame { get; set; }
         private List<AnimationFrame> frames;
-        private int counter;
-        private double secondCounter = 0;
+        public int counter;
+        public double secondCounter = 0;
+        public int nLoops = 0;
 
         public Animation()
         {
@@ -39,6 +40,7 @@ namespace ProjectGameDev
             }
             if (counter >= frames.Count)
             {
+                nLoops++;
                 counter = 0;
             }
         }

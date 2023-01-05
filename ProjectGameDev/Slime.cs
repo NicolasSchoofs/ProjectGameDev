@@ -5,16 +5,41 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D9;
 using SharpDX.MediaFoundation;
+using Color = Microsoft.Xna.Framework.Color;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace ProjectGameDev
 {
-    internal class Slime : IGameObject
+    enum State
+    {
+        Left,
+        Right
+    }
+    internal class Slime:Sprite, IGameObject
     {
         private Texture2D textureIdle;
+
+        private int groundLevel = 720;
+        private int wallRight = 9999;
+        private int wallLeft = 0;
+
+        private Texture2D blokTexture;
+
+
+
+        private int width = 25;
+        private int height = 18;
+
+        private Vector2 gravity, gravityAcceleration, terminalVelocity;
+
+
+        private State state = State.Right;
 
         private SpriteEffects spriteEffect = SpriteEffects.None;
         private Animation idle;
@@ -22,31 +47,172 @@ namespace ProjectGameDev
         private Vector2 positie;
         private Vector2 snelheid;
 
-        public Slime(Texture2D textuIdle)
+        public Slime(Texture2D textuIdle, Texture2D blokTexture)
         {
-            positie = new Vector2(0, 0);
+            this.blokTexture = blokTexture;
+            //collision box
+            boundingBox = new Rectangle(Convert.ToInt16(positie.X), Convert.ToInt16(positie.Y), width * 3, height * 3);
+
+            //
+            positie = new Vector2(300, 0);
             snelheid = new Vector2(1, 1);
+
+            gravity = new Vector2(0, 1);
+            gravityAcceleration = new Vector2(0, 0.1f);
+            terminalVelocity = new Vector2(0, 10);
 
             this.textureIdle = textuIdle;
             idle = new Animation();
-            idle.AddFrame(new AnimationFrame(new Rectangle(20, 30, 50, 50)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(100, 30, 50, 50)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(180, 30, 50, 50)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(260, 30, 50, 50)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(340, 30, 50, 50)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(420, 30, 50, 50)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(500, 30, 50, 50)));
+            idle.AddFrame(new AnimationFrame(new Rectangle(20, 30, width, height)));
+            idle.AddFrame(new AnimationFrame(new Rectangle(100, 30, width, height)));
+            idle.AddFrame(new AnimationFrame(new Rectangle(180, 30, width, height)));
+            idle.AddFrame(new AnimationFrame(new Rectangle(260, 30, width, height)));
+            idle.AddFrame(new AnimationFrame(new Rectangle(340, 30, width, height)));
+            idle.AddFrame(new AnimationFrame(new Rectangle(420, 30, width, height)));
+            idle.AddFrame(new AnimationFrame(new Rectangle(500, 30, width, height)));
         }
 
         public void Update(GameTime gameTime)
         {
+            if (!collided)
+            {
+                groundLevel = 720;
+                wallRight = 9999;
+                wallLeft = 0;
+            }
+            collided = false;
+            //movement
+            Move();
+            Fall();
+            UpdateBoundingBox();
+
+
+
+            //animations
             idle.Update(gameTime);
             
+            
+        }
+
+        private void UpdateBoundingBox()
+        {
+            boundingBox = new Rectangle(Convert.ToInt16(positie.X), Convert.ToInt16(positie.Y), width * 3, height * 3);
+        }
+
+
+        private void Fall()
+        {
+            if (positie.Y == groundLevel - height * 3)
+            {
+
+            }
+            else if (positie.Y > groundLevel - height * 3)
+            {
+                gravity = new Vector2(0, 1);
+                positie.Y = groundLevel - height * 3;
+                snelheid.Y = 0;
+                gravityAcceleration = new Vector2(0, 0.1f);
+            }
+            else
+            {
+                if (gravity.Y < terminalVelocity.Y)
+                {
+                    gravity += gravityAcceleration;
+                }
+
+                snelheid += gravity;
+
+
+            }
+        }
+
+        private void Move()
+        {
+            switch (state)
+            {
+                case State.Left:
+                    snelheid.X = -2;
+                    break;
+                case State.Right:
+                    snelheid.X = 2;
+                    break;
+            }
+
+            if (snelheid != Vector2.Zero)
+            {
+                positie += snelheid;
+                if (boundingBox.Right > wallRight)
+                {
+                    state = State.Left;
+                }
+
+                if (boundingBox.Left < wallLeft)
+                {
+                    state = State.Right;
+                    spriteEffect = SpriteEffects.None;
+                }
+                
+            }
+
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            //spriteBatch.Draw(textureIdle, positie, idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
+            //spriteBatch.Draw(blokTexture, boundingBox, Color.Red);
             spriteBatch.Draw(textureIdle, positie, idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
         }
+            
+        
+
+        public bool Collision(Block target)
+        {
+            bool intersects = boundingBox.Intersects(target.boundingBox);
+            if (intersects)
+            {
+                collided = true;
+            }
+            return intersects;
+        }
+        public bool Collision(Hero target)
+        {
+            bool intersects = boundingBox.Intersects(target.boundingBox);
+            if (intersects)
+            {
+                collided = true;
+            }
+            return intersects;
+        }
+
+
+        public void CollisionWithBlock(Block target)
+        {
+            //landen op
+            if (positie.Y + height * 3 - 50 <= target.Position.Y)
+            {
+                positie.Y = target.Position.Y - height * 3 + 1;
+                groundLevel = Convert.ToInt16(target.Position.Y);
+
+            }
+            //rechts
+            // && boundingBox.Right <= target.boundingBox.Left + 30
+            else if (boundingBox.Right >= target.boundingBox.Left && boundingBox.Right <= target.boundingBox.Left + 30)
+            {
+                state = State.Left;
+                spriteEffect = SpriteEffects.FlipHorizontally;
+            }
+
+            //links
+            else if (boundingBox.Left <= target.boundingBox.Right && positie.X >= target.boundingBox.Right - 20)
+            {
+                state = State.Right;
+                spriteEffect = SpriteEffects.None;
+            }
+
+
+        }
+
+
+
     }
 }
