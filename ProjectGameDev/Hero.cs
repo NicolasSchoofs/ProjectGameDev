@@ -164,10 +164,10 @@ namespace ProjectGameDev
             //attack1
             this.textureAttack1 = textureAttack1;
             attack1 = new Animation();
-            attack1.AddFrame(new AnimationFrame(new Rectangle(50, startY, attackWidth, attackHeight)));
-            attack1.AddFrame(new AnimationFrame(new Rectangle(50 + schuifOp_X, startY, attackWidth, attackHeight)));
-            attack1.AddFrame(new AnimationFrame(new Rectangle(50 + schuifOp_X * 2, startY, attackWidth, attackHeight)));
-            attack1.AddFrame(new AnimationFrame(new Rectangle(50 + schuifOp_X * 3, startY, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(40, 20, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(40 + schuifOp_X, 20, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(40 + schuifOp_X * 2, 20, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(40 + schuifOp_X * 3, 20, attackWidth, attackHeight)));
 
             //attack2
             this.textureAttack2 = textureAttack2;
@@ -235,15 +235,6 @@ namespace ProjectGameDev
         {
            
             
-            if (action == Action.death)
-            {
-                if (nLoopsDeath + 1 <= death.nLoops)
-                {
-                    Game1.pauze = true;
-                }
-                death.Update(gameTime);
-                return;
-            }
             counter++;
             if (!collided)
             {
@@ -305,16 +296,30 @@ namespace ProjectGameDev
                action = Action.idle;
            }
 
+           if (state.IsKeyDown(Keys.Escape))
+           {
+               Game1.pauze = true;
+           }
+
             Move();
             UpdateBoundingBox();
             Fall();
 
-            
-           
-            
-            
-            
-            
+
+            if (action == Action.death)
+            {
+                if (nLoopsDeath + 1 <= death.nLoops)
+                {
+                    Game1.death = true;
+                }
+                death.Update(gameTime);
+                return;
+            }
+
+
+
+
+
             switch (action)
             {
                 case Action.idle:
@@ -407,7 +412,7 @@ namespace ProjectGameDev
         {
             if (positie.Y > 3000)
             {
-                System.Environment.Exit(0);
+                action = Action.death;
             }
             if (action == Action.attack1)
             {
@@ -477,7 +482,7 @@ namespace ProjectGameDev
 
         public void CollisionWithBlock(Block target)
         {
-            //landen op
+            //Onder
             if (positie.Y + height * 3 - 50 <= target.Position.Y)
             {
                 positie.Y = target.Position.Y - height * 3 + 1;

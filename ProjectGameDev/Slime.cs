@@ -76,7 +76,7 @@ namespace ProjectGameDev
         {
             if (!collided)
             {
-                groundLevel = 720;
+                groundLevel = 9999;
                 wallRight = 9999;
                 wallLeft = 0;
             }
