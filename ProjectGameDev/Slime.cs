@@ -9,6 +9,7 @@ using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D9;
 using SharpDX.MediaFoundation;
+using SharpDX.XAudio2;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
@@ -21,7 +22,7 @@ namespace ProjectGameDev
         Left,
         Right
     }
-    internal class Slime:Sprite, IGameObject
+    internal class Slime:Enemy
     {
         private Texture2D textureIdle;
 
@@ -47,14 +48,14 @@ namespace ProjectGameDev
         private Vector2 positie;
         private Vector2 snelheid;
 
-        public Slime(Texture2D textuIdle, Texture2D blokTexture)
+        public Slime(Texture2D textuIdle, Texture2D blokTexture, Vector2 spawnLocation)
         {
             this.blokTexture = blokTexture;
             //collision box
             boundingBox = new Rectangle(Convert.ToInt16(positie.X), Convert.ToInt16(positie.Y), width * 3, height * 3);
-
+            action = Action.run;
             //
-            positie = new Vector2(300, 0);
+            positie = spawnLocation;
             snelheid = new Vector2(1, 1);
 
             gravity = new Vector2(0, 1);
@@ -72,7 +73,7 @@ namespace ProjectGameDev
             idle.AddFrame(new AnimationFrame(new Rectangle(500, 30, width, height)));
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             if (!collided)
             {
@@ -81,15 +82,28 @@ namespace ProjectGameDev
                 wallLeft = 0;
             }
             collided = false;
-            //movement
-            Move();
-            Fall();
-            UpdateBoundingBox();
+
 
 
 
             //animations
-            idle.Update(gameTime);
+            switch (action)
+            {
+                case Action.run:
+                    //movement
+                    Move();
+                    Fall();
+                    UpdateBoundingBox();
+                    idle.Update(gameTime);
+                    break;
+                case Action.hit:
+                    action = Action.death;
+                    break;
+                case Action.death:
+                    break;
+
+            }
+            
             
             
         }
@@ -156,36 +170,26 @@ namespace ProjectGameDev
 
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             //spriteBatch.Draw(textureIdle, positie, idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
             //spriteBatch.Draw(blokTexture, boundingBox, Color.Red);
-            spriteBatch.Draw(textureIdle, positie, idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
+            switch (action)
+            {
+                case Action.run:
+                    spriteBatch.Draw(textureIdle, positie, idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
+                    break;
+                case Action.death:
+                    break;
+            }
+            
         }
             
         
 
-        public bool Collision(Block target)
-        {
-            bool intersects = boundingBox.Intersects(target.boundingBox);
-            if (intersects)
-            {
-                collided = true;
-            }
-            return intersects;
-        }
-        public bool Collision(Hero target)
-        {
-            bool intersects = boundingBox.Intersects(target.boundingBox);
-            if (intersects)
-            {
-                collided = true;
-            }
-            return intersects;
-        }
 
 
-        public void CollisionWithBlock(Block target)
+        public override void CollisionWithBlock(Block target)
         {
             //landen op
             if (positie.Y + height * 3 - 50 <= target.Position.Y)
@@ -209,8 +213,15 @@ namespace ProjectGameDev
                 spriteEffect = SpriteEffects.None;
             }
 
-
         }
+
+        public override void Reset()
+        {
+            health = 3;
+            action = Action.run;
+        }
+
+
 
 
 

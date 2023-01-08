@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,7 +43,6 @@ namespace ProjectGameDev
     internal class Hero:Sprite, IGameObject
     {
         private Texture2D blokTexture;
-        private Rectangle boundingBox;
 
         private Texture2D textureIdle;
         private Texture2D textureRun;
@@ -82,7 +83,7 @@ namespace ProjectGameDev
 
         private int counter = 0, lastCount = 0;
 
-        private HealthBar healthbar;
+        public HealthBar healthbar;
 
 
 
@@ -95,14 +96,15 @@ namespace ProjectGameDev
         public int width = 30;
         public int height = 45;
         private int attackWidth = 110;
-        private int attackHeight = 47;
+        private int attackHeight = 75;
 
         private int startY = 50;
         private int startX = 60;
 
 
         private Action action;
-        
+
+        private Rectangle attackHitbox;
 
 
         private int schuifOp_X = 150;
@@ -115,13 +117,14 @@ namespace ProjectGameDev
             int a = width * 3;
             int b = height * 3;
             boundingBox = new Rectangle(Convert.ToInt16(positie.X), Convert.ToInt16(positie.Y), width * 3,height * 3);
+            attackHitbox = new Rectangle(Convert.ToInt16(boundingBox.Right), Convert.ToInt16(boundingBox.Y), 30, 50);
             
             action = Action.idle;
-            positie = new Vector2(0, 0);
+            positie = new Vector2(100, 400);
             snelheid = new Vector2(1, 1);
             gravity = new Vector2(0, 1);
             gravityAcceleration = new Vector2(0, 0.1f);
-            terminalVelocity = new Vector2(0, 6);
+            terminalVelocity = new Vector2(0, 2.5f);
 
             //idle
             this.textureIdle = textureIdle;
@@ -164,10 +167,10 @@ namespace ProjectGameDev
             //attack1
             this.textureAttack1 = textureAttack1;
             attack1 = new Animation();
-            attack1.AddFrame(new AnimationFrame(new Rectangle(40, 20, attackWidth, attackHeight)));
-            attack1.AddFrame(new AnimationFrame(new Rectangle(40 + schuifOp_X, 20, attackWidth, attackHeight)));
-            attack1.AddFrame(new AnimationFrame(new Rectangle(40 + schuifOp_X * 2, 20, attackWidth, attackHeight)));
-            attack1.AddFrame(new AnimationFrame(new Rectangle(40 + schuifOp_X * 3, 20, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(30, 20, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(30 + schuifOp_X, 20, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(30 + schuifOp_X * 2, 20, attackWidth, attackHeight)));
+            attack1.AddFrame(new AnimationFrame(new Rectangle(30 + schuifOp_X * 3, 20, attackWidth, attackHeight)));
 
             //attack2
             this.textureAttack2 = textureAttack2;
@@ -200,6 +203,12 @@ namespace ProjectGameDev
 
         }
 
+        public void Reset(HealthBar healthbar)
+        {
+            positie = new Vector2(100, 200);
+            this.healthbar = healthbar;
+            action = Action.idle;
+        }
         public void Draw(SpriteBatch spriteBatch) 
         {
             //spriteBatch.Draw(blokTexture, boundingBox, Color.Red);
@@ -218,7 +227,15 @@ namespace ProjectGameDev
                     spriteBatch.Draw(textureFall, positie, fall.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
                     break;
                 case Action.attack1:
-                    spriteBatch.Draw(textureAttack1, positie, attack1.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
+                    //spriteBatch.Draw(blokTexture, attackHitbox, Color.Red);
+                    if (spriteEffect == SpriteEffects.FlipHorizontally)
+                    {
+                        spriteBatch.Draw(textureAttack1, new Vector2(positie.X - 145, positie.Y - 2), attack1.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(textureAttack1, new Vector2(positie.X - 90, positie.Y - 2), attack1.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
+                    }
                     break;
                 case Action.hit:
                     spriteBatch.Draw(textureTakeHit, positie, takeHit.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), spriteEffect, 0);
@@ -234,7 +251,6 @@ namespace ProjectGameDev
         public void Update(GameTime gameTime)
         {
            
-            
             counter++;
             if (!collided)
             {
@@ -243,11 +259,7 @@ namespace ProjectGameDev
                 wallLeft = 0;
             }
 
-            if (health <= 0)
-            {
-                System.Environment.Exit(0);
-            }
-
+            
            
             collided = false;
             
@@ -259,62 +271,63 @@ namespace ProjectGameDev
 
            KeyboardState state = Keyboard.GetState();
 
-           if (state.IsKeyDown(Keys.M))
-           {
-               
-           }
-           if (state.IsKeyDown(Keys.Left))
-           {
-               snelheid.X = -8;
-               spriteEffect = SpriteEffects.FlipHorizontally;
-           }
-
-           if (state.IsKeyDown(Keys.Right))
-           {
-               snelheid.X = 8;
-               spriteEffect = SpriteEffects.None;
-           }
-
-           if (state.IsKeyUp(Keys.Left) && state.IsKeyUp(Keys.Right))
-           {
-               snelheid.X = 0;
-           }
-
-           if (state.IsKeyDown(Keys.Up) && snelheid.Y == 0)
-           {
-               snelheid.Y = -30;
-           }
-
-           if (state.IsKeyDown(Keys.W))
-           {
-               Attack1();
-           }
+           
 
            if (state.IsKeyUp(Keys.W) && action == Action.attack1)
            {
-               positie.Y = screenHeight - height * 3;
-               action = Action.idle;
+               if ((attack1.nLoops >= 1))
+               {
+                   attack1.nLoops = 0;
+                   attack1.CurrentFrame = attack1.frames[0];
+                   action = Action.idle;
+               }
            }
 
-           if (state.IsKeyDown(Keys.Escape))
+           if (action != Action.attack1)
            {
-               Game1.pauze = true;
+              
+
+               if (state.IsKeyDown(Keys.M))
+               {
+                   
+               }
+               if (state.IsKeyDown(Keys.Left))
+               {
+                   snelheid.X = -8;
+                   spriteEffect = SpriteEffects.FlipHorizontally;
+               }
+
+               if (state.IsKeyDown(Keys.Right))
+               {
+                   snelheid.X = 8;
+                   spriteEffect = SpriteEffects.None;
+               }
+
+               if (state.IsKeyUp(Keys.Left) && state.IsKeyUp(Keys.Right))
+               {
+                   snelheid.X = 0;
+               }
+
+               if (state.IsKeyDown(Keys.Up) && snelheid.Y == 0)
+               {
+                   snelheid.Y = -30;
+               }
+
+              
+
+               if (state.IsKeyDown(Keys.Escape))
+               {
+                   Game1.gameState = GameState.pauze;
+               }
+           }
+           if (state.IsKeyDown(Keys.W) && action != Action.hit && action != Action.jump && action != Action.fall)
+           {
+               Attack1();
            }
 
             Move();
             UpdateBoundingBox();
             Fall();
-
-
-            if (action == Action.death)
-            {
-                if (nLoopsDeath + 1 <= death.nLoops)
-                {
-                    Game1.death = true;
-                }
-                death.Update(gameTime);
-                return;
-            }
 
 
 
@@ -338,74 +351,101 @@ namespace ProjectGameDev
                     attack1.Update(gameTime);
                     break;
                 case Action.hit:
-                    takeHit.Update(gameTime);
+                    if (!(takeHit.nLoops >= 2))
+                    {
+                        takeHit.Update(gameTime);
+                    }
+                    else
+                    {
+                        takeHit.nLoops = 0;
+                        action = Action.idle;
+                    }
+                    break;
+                case Action.death:
+                    if (!(death.nLoops >= 1))
+                    {
+                        death.Update(gameTime);
+                        
+                    }
+                    else
+                    {
+                        death.nLoops = 0;
+                        Game1.gameState = GameState.death;
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (action == Action.hit && nLoopsHit + 1 <= takeHit.nLoops)
-            {
-                action = Action.idle;
-                nLoopsHit = takeHit.nLoops;
-            }
 
 
-
+            
 
         }
 
         private void UpdateBoundingBox()
         {
             boundingBox = new Rectangle(Convert.ToInt16(positie.X), Convert.ToInt16(positie.Y), width * 3, height * 3);
+            if (spriteEffect == SpriteEffects.FlipHorizontally)
+            {
+                attackHitbox = new Rectangle(boundingBox.Left - 120, boundingBox.Y, 180, 130);
+            }
+            else
+            {
+                attackHitbox = new Rectangle(boundingBox.Right - 60, boundingBox.Y, 180, 130);
+            }
+            
         }
 
         private void Attack1()
         {
-            
             action = Action.attack1;
         }
 
         private void Move()
         {
-            if (action != Action.hit)
+            if (action != Action.death && action!= Action.attack1)
             {
-                if (snelheid != Vector2.Zero)
+                
+            
+                if (action != Action.hit)
                 {
-                    if (snelheid.Y < 0)
+                    if (snelheid != Vector2.Zero)
                     {
-                        action = Action.jump;
-                    }
-                    else if (snelheid.Y > 0)
-                    {
-                        action = Action.fall;
-                    }
-                    else
-                    {
-                        action = Action.run;
+                        if (snelheid.Y < 0)
+                        {
+                            action = Action.jump;
+                        }
+                        else if (snelheid.Y > 0)
+                        {
+                            action = Action.fall;
+                        }
+                        else
+                        {
+                            action = Action.run;
+                        }
+
+                        
                     }
 
-                    
+                    else if (action != Action.attack1)
+                    {
+                        action = Action.idle;
+                    }
+
+                }
+                positie += snelheid;
+                if (boundingBox.Right > wallRight)
+                {
+                    positie.X = wallRight - width * 3;
                 }
 
-                else if (action != Action.attack1)
+                if (boundingBox.Left < wallLeft)
                 {
-                    action = Action.idle;
+                    positie.X = wallLeft;
                 }
 
             }
-            positie += snelheid;
-            if (boundingBox.Right > wallRight)
-            {
-                positie.X = wallRight - width * 3;
-            }
-
-            if (boundingBox.Left < wallLeft)
-            {
-                positie.X = wallLeft;
-            }
-
-
         }
 
         private void Fall()
@@ -467,6 +507,7 @@ namespace ProjectGameDev
 
             }
             
+
         }
 
         public bool Collision(Block target)
@@ -483,10 +524,17 @@ namespace ProjectGameDev
         public void CollisionWithBlock(Block target)
         {
             //Onder
-            if (positie.Y + height * 3 - 50 <= target.Position.Y)
+            if (positie.Y + height * 3 - 80 <= target.Position.Y)
             {
-                positie.Y = target.Position.Y - height * 3 + 1;
-                groundLevel = Convert.ToInt16(target.Position.Y);
+                if (!(boundingBox.Right > wallRight) && !(boundingBox.Left < wallLeft))
+                {
+                    positie.Y = target.Position.Y - height * 3 + 1;
+                    groundLevel = Convert.ToInt16(target.Position.Y);
+                }
+
+               
+                
+                
 
             }
             //rechts
@@ -502,10 +550,18 @@ namespace ProjectGameDev
             {
                 wallLeft = Convert.ToInt16(target.boundingBox.Right);
             }
-
             
+            
+            //boven
+            else if (positie.Y + 50 <= target.Position.Y + target.boundingBox.Y)
+            {
+                positie.Y += 3;
+                snelheid.Y = 3;
+
+            }
+
         }
-        public bool Collision(Slime target)
+        public bool Collision(Enemy target)
         {
             bool intersects = boundingBox.Intersects(target.boundingBox);
             if (intersects)
@@ -514,7 +570,8 @@ namespace ProjectGameDev
             }
             return intersects;
         }
-        public void CollisionWithSlime(Slime target)
+
+        public void TakeDamage()
         {
             if (action != Action.hit)
             {
@@ -522,15 +579,43 @@ namespace ProjectGameDev
 
                 if (!healthbar.LowerHealth())
                 {
-                    //DIE
-                    action = Action.death;
+                    Die();
                 }
-                
+
                 lastCount = counter;
+            }
+        }
+        public void CollisionEnemy(Enemy target)
+        {
+            if (target.action != Action.death)
+            {
+                TakeDamage();
+            }
+        }
+
+        public bool CheckForAttackCollision(Enemy target)
+        {
+            bool intersects = attackHitbox.Intersects(target.boundingBox);
+            if (intersects)
+            {
+                collided = true;
+            }
+            return intersects;
+        }
+
+        public void AttackEnemy(Enemy target)
+        {
+            if (action == Action.attack1)
+            {
+                target.TakeDamage();
             }
             
         }
 
+        private void Die()
+        {
+            action = Action.death;
+        }
 
 
 

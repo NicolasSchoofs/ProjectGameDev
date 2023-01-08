@@ -14,8 +14,11 @@ namespace ProjectGameDev
     {
         private List<Heart> hearts = new List<Heart>();
         private int schijfOp = 100;
+        private int health;
+        
         public HealthBar(Texture2D HeartTexture, int nHearts)
         {
+            health = nHearts * 2;
             for (int i = 0; i < nHearts; i++)
             {
                 hearts.Add(new Heart(HeartTexture, new Vector2(20 + schijfOp * i,20)));
@@ -42,17 +45,22 @@ namespace ProjectGameDev
 
         public bool LowerHealth()
         {
-
+            
             for (int i = hearts.Count - 1; i >= 0; i--)
             {
                 if (hearts[i].LowerHealth())
                 {
-                    return true;
+                    health--;
+                    break;
                 }
 
             }
+            if (health <= 0)
+            {
+                return false;
+            }
 
-            return false;
+            return true;
         }
     }
 }

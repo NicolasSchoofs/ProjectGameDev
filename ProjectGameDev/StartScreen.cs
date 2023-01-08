@@ -53,7 +53,7 @@ namespace ProjectGameDev
             {
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    Game1.start = true;
+                    Game1.gameState = GameState.playing;
                 }
             }
 

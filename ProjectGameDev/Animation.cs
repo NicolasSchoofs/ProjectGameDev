@@ -11,7 +11,7 @@ namespace ProjectGameDev
     internal class Animation
     {
         public AnimationFrame CurrentFrame { get; set; }
-        private List<AnimationFrame> frames;
+        public List<AnimationFrame> frames;
         public int counter;
         public double secondCounter = 0;
         public int nLoops = 0;

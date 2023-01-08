@@ -60,7 +60,7 @@ namespace ProjectGameDev
             {
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    Game1.pauze = false;
+                    Game1.gameState = GameState.playing;
                 }
             }
 

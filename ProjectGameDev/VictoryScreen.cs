@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SharpDX.Direct2D1.Effects;
 
 namespace ProjectGameDev
 {
-    internal class GameOverScreen:IGameObject
+    internal class VictoryScreen: IGameObject
     {
         private Texture2D texture;
         private SpriteFont font;
@@ -24,7 +23,7 @@ namespace ProjectGameDev
         private Vector2 position;
         private Vector2 positionItem1, positionItem2, positionItem3;
 
-        public GameOverScreen(Texture2D menuTexture, SpriteFont font)
+        public VictoryScreen(Texture2D menuTexture, SpriteFont font)
         {
             positionItem1 = new Vector2(Game1.screenwidth / 2 - width / 2 + 40, Game1.screenHeight / 2 - height / 2 + 50);
             positionItem2 = new Vector2(Game1.screenwidth / 2 - width / 2 + 40, Game1.screenHeight / 2 - height / 2 + 150);
@@ -81,7 +80,7 @@ namespace ProjectGameDev
             spriteBatch.Draw(texture, positionItem3, menuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), spriteEffect, 0);
 
             //public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
-            spriteBatch.DrawString(font, "GAME OVER", new Vector2(positionItem1.X - 140, positionItem1.Y - 150), Color.Red, 0, Vector2.Zero, new Vector2(3,3), spriteEffect, 0);
+            spriteBatch.DrawString(font, "CONGRATULATIONS", new Vector2(positionItem1.X - 290, positionItem1.Y - 150), Color.White, 0, Vector2.Zero, new Vector2(3, 3), spriteEffect, 0);
             spriteBatch.DrawString(font, "RETRY", new Vector2(positionItem1.X + 55, positionItem1.Y + 25), Color.Black);
             spriteBatch.DrawString(font, "CREDITS", new Vector2(positionItem2.X + 35, positionItem2.Y + 25), Color.Black);
             spriteBatch.DrawString(font, "EXIT", new Vector2(positionItem3.X + 65, positionItem3.Y + 25), Color.Black);

@@ -20,9 +20,9 @@ namespace ProjectGameDev
         public Vector2 Position;
         //public CollideWithEvent CollideWithEvent { get; set; }
 
-        public Block(Texture2D texture, Rectangle sourceRectangle, Vector2 position, Texture2D blokTexture)
+        public Block(Texture2D texture, Rectangle sourceRectangle, Vector2 position)
         {
-            this.blokTexture = blokTexture;
+            //this.blokTexture = blokTexture;
             Texture = texture;
             SourceRectangle = sourceRectangle;
             Position = position;
@@ -39,14 +39,8 @@ namespace ProjectGameDev
         public void Update(GameTime gameTime)
         {
             
-
         }
 
-        
-        //public virtual void IsCollidedWithEvent(Character collider)
-        //{
-        //    CollideWithEvent.Execute();
-        //}
 
     }
 }
