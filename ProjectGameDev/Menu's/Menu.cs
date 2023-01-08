@@ -53,7 +53,6 @@ namespace ProjectGameDev
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(texture, Position, mainMenu, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
             spriteBatch.Draw(Texture, Position,MainMenu, Color.White * 0.9f, 0, new Vector2(1,1), new Vector2(1,1), SpriteEffect, 0);
             spriteBatch.Draw(Texture, PositionItem1, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
             spriteBatch.Draw(Texture, PositionItem2, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);

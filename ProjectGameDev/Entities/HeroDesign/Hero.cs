@@ -44,7 +44,6 @@ namespace ProjectGameDev.Entities.HeroDesign
 {
     internal class Hero : Entity, IGameObject
     {
-        private Texture2D blokTexture;
 
         private Texture2D textureIdle;
         private Texture2D textureRun;
@@ -93,13 +92,12 @@ namespace ProjectGameDev.Entities.HeroDesign
         private int schuifOp_X = 150;
 
 
-        public Hero(Texture2D textureIdle, Texture2D textureRun, Texture2D textureJump, Texture2D textureFall, Texture2D textureAttack1, Texture2D textureAttack2, Texture2D textureAttack3, Texture2D textureAttack4, Texture2D textureDeath, Texture2D textureTakeHit, Texture2D blokTexture, HealthBar Healthbar)
+        public Hero(Texture2D textureIdle, Texture2D textureRun, Texture2D textureJump, Texture2D textureFall, Texture2D textureAttack1, Texture2D textureAttack2, Texture2D textureAttack3, Texture2D textureAttack4, Texture2D textureDeath, Texture2D textureTakeHit, HealthBar Healthbar)
         {
             RunningSpeed = 8;
             Width = 30;
             Height = 45;
             this.Healthbar = Healthbar;
-            this.blokTexture = blokTexture;
 
             Position = new Vector2(700, 300);
             Speed = new Vector2(1, 1);
@@ -185,13 +183,12 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         public void Reset(HealthBar Healthbar)
         {
-            Position = new Vector2(700, 300);
+            Position = new Vector2(700, 200);
             this.Healthbar = Healthbar;
             Action = Action.idle;
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(blokTexture, BoundingBox, Color.Red);
             switch (Action)
             {
                 case Action.idle:
@@ -207,7 +204,6 @@ namespace ProjectGameDev.Entities.HeroDesign
                     spriteBatch.Draw(textureFall, Position, fall.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
                 case Action.attack:
-                    //spriteBatch.Draw(blokTexture, AttackHitbox, Color.Red);
                     if (SpriteEffect == SpriteEffects.FlipHorizontally)
                     {
                         spriteBatch.Draw(textureAttack, new Vector2(Position.X - 145, Position.Y - 2), attack.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
@@ -241,7 +237,7 @@ namespace ProjectGameDev.Entities.HeroDesign
 
             Collided = false;
 
-            //snelheid = Vector2.Zero;
+          
 
 
             KeyboardState State = Keyboard.GetState();

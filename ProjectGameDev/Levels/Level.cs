@@ -20,7 +20,6 @@ namespace ProjectGameDev.Levels
     {
         public int[,] GameBoard;
         public Texture2D Texture;
-        public Texture2D BlokTexture;
         public int End;
         public List<Block> Blocks;
         public Background Bg;
@@ -31,7 +30,6 @@ namespace ProjectGameDev.Levels
 
         public Level(Texture2D bloktexture, Texture2D bgTexture, int[,] gameBoard, int typeBg, Song song, List<Enemy> enemies, int end)
         {
-            BlokTexture = bloktexture;
             this.End = end;
             this.Enemies = enemies;
             this.Song = song;

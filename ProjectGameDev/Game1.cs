@@ -49,10 +49,6 @@ namespace ProjectGameDev
 
         public static int CurrentLevel = 1;
 
-        public static bool Pauze = false;
-        public static bool Start = false;
-        public static bool Death = false;
-        public static bool Reset = false;
 
         public static GameState GameState = GameState.start;
 
@@ -60,19 +56,16 @@ namespace ProjectGameDev
 
 
         private SpriteFont _font;
-        private int _score = 0;
+        
 
         private Camera _camera;
 
-        private Texture2D _blokTexture;
+
 
         private Texture2D _slimeIdle;
         private Texture2D _tilesetMarioWorld;
 
-        private int _blockx = 40;
-        private int _blocky = 21;
-        private int _blockWidth = 30;
-        private int _blockHeight = 30;
+       
 
         private int[,] _level1Board = new int[,]
         {
@@ -173,8 +166,8 @@ namespace ProjectGameDev
             _heroTextureDeath = Content.Load<Texture2D>("Hero/Death");
             _heroTextureTakeHit = Content.Load<Texture2D>("Hero/Take Hit");
 
-            _minotaurTexture = Content.Load<Texture2D>("Minotaur");
-            _skeletonTexture = Content.Load<Texture2D>("Skeleton");
+            _minotaurTexture = Content.Load<Texture2D>("Enemies/Minotaur");
+            _skeletonTexture = Content.Load<Texture2D>("Enemies/Skeleton");
 
             _plainsSong = Content.Load<Song>("Music/Funky Forest");
             _castleSong = Content.Load<Song>("Music/Sen's Fortress");
@@ -182,24 +175,22 @@ namespace ProjectGameDev
 
 
 
-            _heartTexture = Content.Load<Texture2D>("Heart");
-            _menuTexture = Content.Load<Texture2D>("Menu");
-            _bgTexture = Content.Load<Texture2D>("Background");
+            _heartTexture = Content.Load<Texture2D>("Hero/Heart");
+            _menuTexture = Content.Load<Texture2D>("Menu/Menu");
+            _bgTexture = Content.Load<Texture2D>("Levels/Background");
 
             _font = Content.Load<SpriteFont>("Font");
 
-            _blokTexture = new Texture2D(GraphicsDevice, 1, 1);
-            _blokTexture.SetData(new[] { Color.White });
-
+         
 
 
 
 
             //slime
-            _slimeIdle = Content.Load<Texture2D>("slime_idle2");
+            _slimeIdle = Content.Load<Texture2D>("Enemies/slime_idle2");
 
             //tiles
-            _tilesetMarioWorld = Content.Load<Texture2D>("tilesMarioWorld");
+            _tilesetMarioWorld = Content.Load<Texture2D>("Levels/tilesMarioWorld");
 
 
      
@@ -209,13 +200,13 @@ namespace ProjectGameDev
 
             _graphics.PreferredBackBufferWidth = ScreenWidth;
             _graphics.PreferredBackBufferHeight = ScreenHeight;
-            //_graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
 
 
             base.Initialize();
             _healthbar = new HealthBar(_heartTexture, 3);
-            _hero = new Hero(_heroTextureIdle, _heroTextureRun, _heroTextureJump, _heroTextureFall, _heroTextureAttack1, _heroTextureAttack2, _heroTextureAttack3, _heroTextureAttack4, _heroTextureDeath, _heroTextureTakeHit, _blokTexture, _healthbar);
+            _hero = new Hero(_heroTextureIdle, _heroTextureRun, _heroTextureJump, _heroTextureFall, _heroTextureAttack1, _heroTextureAttack2, _heroTextureAttack3, _heroTextureAttack4, _heroTextureDeath, _heroTextureTakeHit, _healthbar);
 
 
             _menu = new Menu(_menuTexture, _font);
@@ -230,12 +221,12 @@ namespace ProjectGameDev
 
             //enemies level1
 
-            _slime1 = new Slime(_slimeIdle, _blokTexture, new Vector2(1500, 100));
-            _slime2 = new Slime(_slimeIdle, _blokTexture, new Vector2(2500, 100));
-            _slime3 = new Slime(_slimeIdle, _blokTexture, new Vector2(5000, 100));
-            _slime4 = new Slime(_slimeIdle, _blokTexture, new Vector2(5500, 100));
+            _slime1 = new Slime(_slimeIdle, new Vector2(1500, 100));
+            _slime2 = new Slime(_slimeIdle, new Vector2(2500, 100));
+            _slime3 = new Slime(_slimeIdle, new Vector2(5000, 100));
+            _slime4 = new Slime(_slimeIdle, new Vector2(5500, 100));
 
-            _minotaur1 = new Minotaur(_minotaurTexture, _blokTexture, new Vector2(3200, 100));
+            _minotaur1 = new Minotaur(_minotaurTexture, new Vector2(3200, 100));
             
 
             _enemiesLevel1.Add(_slime1);
@@ -246,13 +237,13 @@ namespace ProjectGameDev
 
             //enemies level2
 
-            _skeleton1 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(1300, 100));
-            _skeleton2 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(1800, 400));
-            _skeleton3 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(1900, 400));
-            _skeleton4 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(3500, 100));
+            _skeleton1 = new Skeleton(_skeletonTexture, new Vector2(1300, 100));
+            _skeleton2 = new Skeleton(_skeletonTexture, new Vector2(1800, 400));
+            _skeleton3 = new Skeleton(_skeletonTexture, new Vector2(1900, 400));
+            _skeleton4 = new Skeleton(_skeletonTexture, new Vector2(3500, 100));
 
-            _minotaur2 = new Minotaur(_minotaurTexture, _blokTexture, new Vector2(3200, 100));
-            _minotaur3 = new Minotaur(_minotaurTexture, _blokTexture, new Vector2(5000, 100));
+            _minotaur2 = new Minotaur(_minotaurTexture, new Vector2(3200, 100));
+            _minotaur3 = new Minotaur(_minotaurTexture, new Vector2(5000, 100));
 
             _enemiesLevel2.Add(_skeleton1);
             _enemiesLevel2.Add(_skeleton2);
@@ -288,7 +279,6 @@ namespace ProjectGameDev
 
         protected override void Update(GameTime gameTime)
         {
-            // || Keyboard.GetState().IsKeyDown(Keys.Escape)
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                     Exit();
 

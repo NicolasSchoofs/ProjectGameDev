@@ -13,7 +13,6 @@ namespace ProjectGameDev
 {
     internal class Background: IGameObject
     {
-        //6,3
         private Texture2D _texture;
         private int _width = 513, _height = 430;
 

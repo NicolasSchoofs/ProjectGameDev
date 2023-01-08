@@ -19,9 +19,6 @@ namespace ProjectGameDev.Enemies
     {
 
         public State State;
- 
- 
-
         public override bool Collision(Block target)
         {
             bool intersects = BoundingBox.Intersects(target.BoundingBox);

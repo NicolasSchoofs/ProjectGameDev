@@ -19,7 +19,7 @@ namespace ProjectGameDev
         private int _type;
 
         public Vector2 Position;
-        //public CollideWithEvent CollideWithEvent { get; set; }
+        
 
         private Rectangle _sourceRectangleGrass = new Rectangle(444, 203, 15, 15);
         private Rectangle _sourceRectangleGround = new Rectangle(444, 219, 15, 15);
@@ -58,9 +58,6 @@ namespace ProjectGameDev
                     spriteBatch.Draw(Texture, Position, _sourceRectangleCastleGround, Color.White, 0, new Vector2(1, 1), new Vector2(5, 5), SpriteEffects.None, 0);
                     break;
             }
-            //spriteBatch.Draw(blokTexture, BoundingBox, Color.Red);
-            
-            //spriteBatch.Draw(textureIdle, positie, idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
             
         }
 

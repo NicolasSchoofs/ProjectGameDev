@@ -23,30 +23,16 @@ namespace ProjectGameDev
         private Animation _hit;
         private Animation _death;
 
-        //private int Width = 45, Height = 37;
-        //private State State = State.Right;
-        //private int GroundLevel = 9999;
-        //private int WallRight = 9999;
-        //private int WallLeft = 0;
 
         private int _startX = 0, _startY = 140;
         private int _schuifOpX = 64, _schuifOpY = 0;
 
-        private Texture2D _blokTexture2D;
+        
         private int _attackStartX = 5, _attackStartY = 10;
 
 
-        //private Vector2 Position;
 
-        //private Vector2 snelheid;
-        //private Vector2 Gravity;
-        //private Vector2 GravityAcceleration;
-        //private Vector2 TerminalVelocity;
-
-        //private SpriteEffects SpriteEffect = SpriteEffects.None;
-
-
-        public Skeleton(Texture2D skeletonTexture, Texture2D blokTexture, Vector2 spawnLocation)
+        public Skeleton(Texture2D skeletonTexture, Vector2 spawnLocation)
         {
             Width = 45;
             Height = 37;
@@ -54,7 +40,7 @@ namespace ProjectGameDev
             GroundLevel = 9999;
             WallRight = 9999;
             WallLeft = 0;
-            _blokTexture2D = blokTexture;
+            
 
             SpriteEffect = SpriteEffects.FlipHorizontally;
             RunningSpeed =  5;
@@ -193,11 +179,9 @@ namespace ProjectGameDev
             switch (Action)
             {
                 case Action.run:
-                    //spriteBatch.Draw(blokTexture2D, BoundingBox, Color.Red);
                     spriteBatch.Draw(_texture, Position, _run.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
                 case Action.attack:
-                    //spriteBatch.Draw(blokTexture2D, AttackHitbox, Color.Red);
                     if (State == State.left)
                     {
                         spriteBatch.Draw(_texture, new Vector2(Position.X - 40, Position.Y), _attack.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);

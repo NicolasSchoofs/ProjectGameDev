@@ -50,13 +50,11 @@ namespace ProjectGameDev
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(texture, Position, mainMenu, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
             spriteBatch.Draw(Texture, Position, MainMenu, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
             spriteBatch.Draw(Texture, PositionItem1, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
             spriteBatch.Draw(Texture, PositionItem2, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
             spriteBatch.Draw(Texture, PositionItem3, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
 
-            //public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 Position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
             spriteBatch.DrawString(Font, "GAME OVER", new Vector2(PositionItem1.X - 140, PositionItem1.Y - 150), Color.Red, 0, Vector2.Zero, new Vector2(3,3), SpriteEffect, 0);
             spriteBatch.DrawString(Font, "RETRY", new Vector2(PositionItem1.X + 55, PositionItem1.Y + 25), Color.Black);
             spriteBatch.DrawString(Font, "CREDITS", new Vector2(PositionItem2.X + 35, PositionItem2.Y + 25), Color.Black);

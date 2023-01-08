@@ -33,13 +33,12 @@ namespace ProjectGameDev
         private int _startX = 25, _startY = 115;
         private int _schuifOpX = 96, _schuifOpY = 0;
 
-        private Texture2D _blokTexture2D;
         private int _attackStartX = 5, _attackStartY = 290;
         private int _hitStartX = 5, _hitStartY = 788;
         private int _deathStartX = 5, _deathStartY = 885;
 
 
-        public Minotaur(Texture2D minotaurTexture, Texture2D blokTexture, Vector2 spawnLocation)
+        public Minotaur(Texture2D minotaurTexture, Vector2 spawnLocation)
         {
             Width = 55;
             Height = 45;
@@ -55,8 +54,6 @@ namespace ProjectGameDev
 
 
 
-
-            _blokTexture2D = blokTexture;
             BoundingBox = new Rectangle(Convert.ToInt16(Position.X), Convert.ToInt16(Position.Y), Width * 3, Height * 3);
             
 
@@ -217,7 +214,6 @@ namespace ProjectGameDev
                     spriteBatch.Draw(_texture, Position, _run.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
                 case Action.attack:
-                    //spriteBatch.Draw(blokTexture2D, AttackHitbox, Color.Red);
                     spriteBatch.Draw(_texture, new Vector2(Position.X - 50, Position.Y- 50), _attack.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
                 case Action.hit:

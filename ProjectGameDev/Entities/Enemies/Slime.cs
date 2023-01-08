@@ -30,29 +30,15 @@ namespace ProjectGameDev
     {
         private Texture2D _textureIdle;
 
-        //private int GroundLevel = 720;
-        //private int WallRight = 9999;
-        //private int WallLeft = 0;
-
-        private Texture2D _blokTexture;
+       
 
 
 
-        //private int Width = 25;
-        //private int Height = 18;
-
-        //private Vector2 Gravity, GravityAcceleration, TerminalVelocity;
-
-
-        //private State State = State.Right;
-
-        //private SpriteEffects SpriteEffect = SpriteEffects.None;
         private Animation _idle;
 
-        //private Vector2 positie;
-        //private Vector2 snelheid;
+       
 
-        public Slime(Texture2D textuIdle, Texture2D blokTexture, Vector2 spawnLocation)
+        public Slime(Texture2D textuIdle, Vector2 spawnLocation)
         {
             GroundLevel = 720;
             WallRight = 9999;
@@ -60,15 +46,11 @@ namespace ProjectGameDev
             Width = 25;
             Height = 18;
             RunningSpeed = 10;
-            //
             SpriteEffect = SpriteEffects.FlipHorizontally;
-            //
             Position = spawnLocation;
             Speed = new Vector2(1, 1);
             RunningSpeed = 2;
-            //
-            this._blokTexture = blokTexture;
-            //collision box
+            
             BoundingBox = new Rectangle(Convert.ToInt16(Position.X), Convert.ToInt16(Position.Y), Width * 3, Height * 3);
             AttackHitbox = BoundingBox;
             Action = Action.run;
@@ -100,7 +82,7 @@ namespace ProjectGameDev
             Collided = false;
 
 
-            //animations
+            
             switch (Action)
             {
                 case Action.run:

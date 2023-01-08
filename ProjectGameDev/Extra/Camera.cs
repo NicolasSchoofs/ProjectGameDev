@@ -12,7 +12,6 @@ using SharpDX.XAudio2;
 
 namespace ProjectGameDev.Extra
 {
-    //STOLEN CODE
     internal class Camera
     {
         public Matrix Transform { get; private set; }
