@@ -8,7 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mime;
 using Microsoft.Xna.Framework.Media;
-
+using ProjectGameDev.Levels;
+using ProjectGameDev.Enemies;
+using ProjectGameDev.Entities.HeroDesign;
+using ProjectGameDev.Extra;
 
 namespace ProjectGameDev
 {
@@ -33,116 +36,116 @@ namespace ProjectGameDev
         private Texture2D _heroTextureAttack4;
         private Texture2D _heroTextureDeath;
         private Texture2D _heroTextureTakeHit;
-        private Texture2D _HeartTexture;
+        private Texture2D _heartTexture;
         private Texture2D _menuTexture;
         private Texture2D _bgTexture;
         private Texture2D _minotaurTexture;
         private Texture2D _skeletonTexture;
 
-        private Song plainsSong;
-        private Song CastleSong;
-        public static int screenwidth = 1280;
-        public static int screenHeight = 720;
+        private Song _plainsSong;
+        private Song _castleSong;
+        public static int ScreenWidth = 1280;
+        public static int ScreenHeight = 720;
 
-        public static int currentLevel = 1;
+        public static int CurrentLevel = 1;
 
-        public static bool pauze = false;
-        public static bool start = false;
-        public static bool death = false;
-        public static bool reset = false;
+        public static bool Pauze = false;
+        public static bool Start = false;
+        public static bool Death = false;
+        public static bool Reset = false;
 
-        public static GameState gameState = GameState.start;
+        public static GameState GameState = GameState.start;
 
        
 
 
-        private SpriteFont font;
-        private int score = 0;
+        private SpriteFont _font;
+        private int _score = 0;
 
         private Camera _camera;
 
-        private Texture2D blokTexture;
+        private Texture2D _blokTexture;
 
         private Texture2D _slimeIdle;
         private Texture2D _tilesetMarioWorld;
 
-        private int blockx = 40;
-        private int blocky = 21;
-        private int blockWidth = 30;
-        private int blockHeight = 30;
+        private int _blockx = 40;
+        private int _blocky = 21;
+        private int _blockWidth = 30;
+        private int _blockHeight = 30;
 
-        private int[,] level1Board = new int[,]
+        private int[,] _level1Board = new int[,]
         {
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
+            { 2,2,2,2,2,2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }
         };
 
-        private int[,] level2Board = new int[,]
+        private int[,] _level2Board = new int[,]
          {
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 4, 4, 4, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 3, 3, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
-             { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 }
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 4, 4, 4, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 3, 3, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+             { 4,4,4,4,4,4,4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 }
          };
 
-        private Level level1;
-        private Level level2;
+        private Level _level1;
+        private Level _level2;
 
 
-        private List<Enemy> enemiesLevel1 = new List<Enemy>();
-        private List<Enemy> enemiesLevel2 = new List<Enemy>();
-        private List<Level>levels = new List<Level>();
+        private List<Enemy> _enemiesLevel1 = new List<Enemy>();
+        private List<Enemy> _enemiesLevel2 = new List<Enemy>();
+        private List<Level>_levels = new List<Level>();
 
 
 
-        private Hero hero;
-        private Slime slime1;
-        private Slime slime2;
-        private Slime slime3;
-        private Slime slime4;
-        private HealthBar healthbar;
+        private Hero _hero;
+        private Slime _slime1;
+        private Slime _slime2;
+        private Slime _slime3;
+        private Slime _slime4;
+        private HealthBar _healthbar;
 
-        private Menu menu;
-        private StartScreen startScreen;
-        private GameOverScreen gameOverScreen;
-        private VictoryScreen victoryScreen;
+        private Menu _menu;
+        private StartScreen _startScreen;
+        private GameOverScreen _gameOverScreen;
+        private VictoryScreen _victoryScreen;
 
-        private Background bg;
+        private Background _bg;
 
-        private Minotaur minotaur1;
-        private Minotaur minotaur2;
-        private Minotaur minotaur3;
+        private Minotaur _minotaur1;
+        private Minotaur _minotaur2;
+        private Minotaur _minotaur3;
 
-        private Skeleton skeleton1;
-        private Skeleton skeleton2;
-        private Skeleton skeleton3;
-        private Skeleton skeleton4;
+        private Skeleton _skeleton1;
+        private Skeleton _skeleton2;
+        private Skeleton _skeleton3;
+        private Skeleton _skeleton4;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
@@ -173,20 +176,20 @@ namespace ProjectGameDev
             _minotaurTexture = Content.Load<Texture2D>("Minotaur");
             _skeletonTexture = Content.Load<Texture2D>("Skeleton");
 
-            plainsSong = Content.Load<Song>("Music/Funky Forest");
-            CastleSong = Content.Load<Song>("Music/Sen's Fortress");
+            _plainsSong = Content.Load<Song>("Music/Funky Forest");
+            _castleSong = Content.Load<Song>("Music/Sen's Fortress");
             
 
 
 
-            _HeartTexture = Content.Load<Texture2D>("Heart");
+            _heartTexture = Content.Load<Texture2D>("Heart");
             _menuTexture = Content.Load<Texture2D>("Menu");
             _bgTexture = Content.Load<Texture2D>("Background");
 
-            font = Content.Load<SpriteFont>("Font");
+            _font = Content.Load<SpriteFont>("Font");
 
-            blokTexture = new Texture2D(GraphicsDevice, 1, 1);
-            blokTexture.SetData(new[] { Color.White });
+            _blokTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _blokTexture.SetData(new[] { Color.White });
 
 
 
@@ -204,67 +207,67 @@ namespace ProjectGameDev
 
 
 
-
-            _graphics.PreferredBackBufferWidth = screenwidth;
-            _graphics.PreferredBackBufferHeight = screenHeight;
+            _graphics.PreferredBackBufferWidth = ScreenWidth;
+            _graphics.PreferredBackBufferHeight = ScreenHeight;
+            //_graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
 
 
             base.Initialize();
-            healthbar = new HealthBar(_HeartTexture, 5);
-            hero = new Hero(_heroTextureIdle, _heroTextureRun, _heroTextureJump, _heroTextureFall, _heroTextureAttack1, _heroTextureAttack2, _heroTextureAttack3, _heroTextureAttack4, _heroTextureDeath, _heroTextureTakeHit, blokTexture, healthbar);
+            _healthbar = new HealthBar(_heartTexture, 3);
+            _hero = new Hero(_heroTextureIdle, _heroTextureRun, _heroTextureJump, _heroTextureFall, _heroTextureAttack1, _heroTextureAttack2, _heroTextureAttack3, _heroTextureAttack4, _heroTextureDeath, _heroTextureTakeHit, _blokTexture, _healthbar);
 
 
-            menu = new Menu(_menuTexture, font);
-            startScreen = new StartScreen(_menuTexture, font);
-            gameOverScreen = new GameOverScreen(_menuTexture, font);
-            victoryScreen = new VictoryScreen(_menuTexture, font);
+            _menu = new Menu(_menuTexture, _font);
+            _startScreen = new StartScreen(_menuTexture, _font);
+            _gameOverScreen = new GameOverScreen(_menuTexture, _font);
+            _victoryScreen = new VictoryScreen(_menuTexture, _font);
 
-            bg = new Background(_bgTexture, 1);
-
+            _bg = new Background(_bgTexture, 1);
+             
 
            
 
             //enemies level1
 
-            slime1 = new Slime(_slimeIdle, blokTexture, new Vector2(900, 100));
-            slime2 = new Slime(_slimeIdle, blokTexture, new Vector2(1900, 100));
-            slime3 = new Slime(_slimeIdle, blokTexture, new Vector2(4000, 100));
-            slime4 = new Slime(_slimeIdle, blokTexture, new Vector2(4500, 100));
+            _slime1 = new Slime(_slimeIdle, _blokTexture, new Vector2(1500, 100));
+            _slime2 = new Slime(_slimeIdle, _blokTexture, new Vector2(2500, 100));
+            _slime3 = new Slime(_slimeIdle, _blokTexture, new Vector2(5000, 100));
+            _slime4 = new Slime(_slimeIdle, _blokTexture, new Vector2(5500, 100));
 
-            minotaur1 = new Minotaur(_minotaurTexture, blokTexture, new Vector2(3200, 100));
+            _minotaur1 = new Minotaur(_minotaurTexture, _blokTexture, new Vector2(3200, 100));
             
 
-            enemiesLevel1.Add(slime1);
-            enemiesLevel1.Add(slime2);
-            enemiesLevel1.Add(slime3);
-            enemiesLevel1.Add(slime4);
-            enemiesLevel1.Add(minotaur1);
+            _enemiesLevel1.Add(_slime1);
+            _enemiesLevel1.Add(_slime2);
+            _enemiesLevel1.Add(_slime3);
+            _enemiesLevel1.Add(_slime4);
+            _enemiesLevel1.Add(_minotaur1);
 
             //enemies level2
 
-            skeleton1 = new Skeleton(_skeletonTexture, blokTexture, new Vector2(900, 100));
-            skeleton2 = new Skeleton(_skeletonTexture, blokTexture, new Vector2(1100, 400));
-            skeleton3 = new Skeleton(_skeletonTexture, blokTexture, new Vector2(1200, 400));
-            skeleton4 = new Skeleton(_skeletonTexture, blokTexture, new Vector2(3500, 100));
+            _skeleton1 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(1300, 100));
+            _skeleton2 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(1800, 400));
+            _skeleton3 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(1900, 400));
+            _skeleton4 = new Skeleton(_skeletonTexture, _blokTexture, new Vector2(3500, 100));
 
-            minotaur2 = new Minotaur(_minotaurTexture, blokTexture, new Vector2(3200, 100));
-            minotaur3 = new Minotaur(_minotaurTexture, blokTexture, new Vector2(5000, 100));
+            _minotaur2 = new Minotaur(_minotaurTexture, _blokTexture, new Vector2(3200, 100));
+            _minotaur3 = new Minotaur(_minotaurTexture, _blokTexture, new Vector2(5000, 100));
 
-            enemiesLevel2.Add(skeleton1);
-            enemiesLevel2.Add(skeleton2);
-            enemiesLevel2.Add(skeleton3);
-            enemiesLevel2.Add(skeleton4);
-            enemiesLevel2.Add(minotaur2);
-            enemiesLevel2.Add(minotaur3);
+            _enemiesLevel2.Add(_skeleton1);
+            _enemiesLevel2.Add(_skeleton2);
+            _enemiesLevel2.Add(_skeleton3);
+            _enemiesLevel2.Add(_skeleton4);
+            _enemiesLevel2.Add(_minotaur2);
+            _enemiesLevel2.Add(_minotaur3);
 
-            level1 = new Level(_tilesetMarioWorld, _bgTexture, level1Board, 1, plainsSong, enemiesLevel1, 5500);
+            _level1 = new Level(_tilesetMarioWorld, _bgTexture, _level1Board, 1, _plainsSong, _enemiesLevel1, 5900);
             
-            level2 = new Level(_tilesetMarioWorld, _bgTexture, level2Board, 2, CastleSong, enemiesLevel2, 5300);
-            levels.Add(level1);
-            levels.Add(level2);
+            _level2 = new Level(_tilesetMarioWorld, _bgTexture, _level2Board, 2, _castleSong, _enemiesLevel2, 5700);
+            _levels.Add(_level1);
+            _levels.Add(_level2);
 
-            levels[currentLevel - 1].PlayMusic();
+            _levels[CurrentLevel - 1].PlayMusic();
 
 
 
@@ -290,58 +293,58 @@ namespace ProjectGameDev
                     Exit();
 
             // TODO: Add your update logic here
-            switch (gameState)
+            switch (GameState)
             {
                 case GameState.death:
                     MediaPlayer.Pause();
-                    gameOverScreen.Update(gameTime);
+                    _gameOverScreen.Update(gameTime);
                     break;
                 case GameState.start:
                     MediaPlayer.Pause();
-                    startScreen.Update(gameTime);
+                    _startScreen.Update(gameTime);
                     break;
                 case GameState.pauze:
                     MediaPlayer.Pause();
-                    menu.Update(gameTime);
+                    _menu.Update(gameTime);
                     break;
                 case GameState.reset:
-                    hero.Reset(new HealthBar(_HeartTexture, 5));
-                    foreach (var enemy in enemiesLevel1)
+                    _hero.Reset(new HealthBar(_heartTexture, 3));
+                    foreach (var enemy in _enemiesLevel1)
                     {
                         enemy.Reset();
                     }
-                    foreach (var enemy in enemiesLevel2)
+                    foreach (var enemy in _enemiesLevel2)
                     {
                         enemy.Reset();
                     }
-                    currentLevel = 1;
-                    levels[currentLevel - 1].PlayMusic();
-                    gameState = GameState.playing;
+                    CurrentLevel = 1;
+                    _levels[CurrentLevel - 1].PlayMusic();
+                    GameState = GameState.playing;
                     break;
                 case GameState.won:
                     MediaPlayer.Stop();
-                    victoryScreen.Update(gameTime);
+                    _victoryScreen.Update(gameTime);
                     break;
                 case GameState.playing:
                     MediaPlayer.Resume();
-                    if (levels[currentLevel - 1].CheckLevelOver(hero))
+                    if (_levels[CurrentLevel - 1].CheckLevelOver(_hero))
                     {
-                        levels[currentLevel - 1].LevelOver(hero, healthbar);
-                        levels[currentLevel - 1].PlayMusic();
+                        _levels[CurrentLevel - 1].LevelOver(_hero, _healthbar);
+                        _levels[CurrentLevel - 1].PlayMusic();
                     }
 
-                    foreach (var block in levels[currentLevel - 1].blocks)
+                    foreach (var block in _levels[CurrentLevel - 1].Blocks)
                     {
-                        if (hero.Collision(block))
+                        if (_hero.Collision(block))
                         {
-                            hero.CollisionWithBlock(block);
+                            _hero.CollisionWithBlock(block);
 
                         }
 
                     }
-                    foreach (var block in levels[currentLevel - 1].blocks)
+                    foreach (var block in _levels[CurrentLevel - 1].Blocks)
                     {
-                        foreach (var enemy in levels[currentLevel - 1].enemies)
+                        foreach (var enemy in _levels[CurrentLevel - 1].Enemies)
                         {
                             if (enemy.Collision(block))
                             {
@@ -352,31 +355,23 @@ namespace ProjectGameDev
                     }
 
 
-                    foreach (var enemy in levels[currentLevel - 1].enemies)
+                    foreach (var enemy in _levels[CurrentLevel - 1].Enemies)
                     {
-                        enemy.CheckForHero(hero);
+                        enemy.CheckForHero(_hero);
                     }
                    
 
 
 
-                    foreach (var enemy in levels[currentLevel - 1].enemies)
+                    foreach (var enemy in _levels[CurrentLevel - 1].Enemies)
                     {
-                        if (hero.CheckForAttackCollision(enemy))
+                        if (_hero.CheckForAttackCollision(enemy))
                         {
-                            hero.AttackEnemy(enemy);
+                            _hero.AttackEnemy(enemy);
                         }
-                        if (hero.Collision(enemy))
+                        if (enemy.CheckForAttackCollision(_hero))
                         {
-                            hero.CollisionEnemy(enemy);
-                        }
-                        if (enemy.CheckForAttackCollision(hero))
-                        {
-                            enemy.AttackHero(hero);
-                        }
-                        if (enemy.CheckForAttackCollision(hero))
-                        {
-                            enemy.AttackHero(hero);
+                            enemy.AttackHero(_hero);
                         }
 
                     }
@@ -384,99 +379,15 @@ namespace ProjectGameDev
                     
 
 
-                    _camera.Follow(hero);
-                    hero.Update(gameTime);
-                    levels[currentLevel - 1].Update(gameTime);
-                    hero.healthbar.Update(gameTime);
+                    _camera.Follow(_hero);
+                    _hero.Update(gameTime);
+                    _levels[CurrentLevel - 1].Update(gameTime);
+                    _hero.Healthbar.Update(gameTime);
                     break;
                 
             }
-            //if (!death)
-            //{
-            //    if (start)
-            //    {
-            //        if (!pauze)
-            //        {
-                        
-            //            MediaPlayer.Resume();
-            //            if (levels[currentLevel - 1].CheckLevelOver(hero))
-            //            {
-            //                levels[currentLevel - 1].LevelOver(hero);
-            //            }
-                        
-            //            foreach (var block in levels[currentLevel - 1].blocks)
-            //            {
-            //                if (hero.Collision(block))
-            //                {
-            //                    hero.CollisionWithBlock(block);
-                                
-            //                }
-
-            //            }
-            //            foreach (var block in levels[currentLevel - 1].blocks)
-            //            {
-            //                foreach (var enemy in enemies)
-            //                {
-            //                    if (enemy.Collision(block))
-            //                    {
-            //                        enemy.CollisionWithBlock(block);
-            //                    }
-            //                }
-                           
-            //            }
-
-            //            minotaur.CheckForHero(hero);
-            //            skeleton.CheckForHero(hero);
-
-                      
-
-            //            foreach (var enemy in enemies)
-            //            {
-            //                if (hero.CheckForAttackCollision(enemy))
-            //                {
-            //                    hero.AttackEnemy(enemy);
-            //                }
-            //                if (hero.Collision(enemy))
-            //                {
-            //                    hero.CollisionEnemy(enemy);
-            //                }
-            //            }
-
-            //            if (skeleton.CheckForAttackCollision(hero))
-            //            {
-            //                skeleton.AttackHero(hero);
-            //            }
-            //            if (minotaur.CheckForAttackCollision(hero))
-            //            {
-            //                minotaur.AttackHero(hero);
-            //            }
-
-
-            //            _camera.Follow(hero);
-            //            hero.Update(gameTime);
-            //            levels[currentLevel - 1].Update(gameTime);
-            //            healthbar.Update(gameTime);
-                        
-            //        }
-            //        else
-            //        {
-            //            MediaPlayer.Pause();
-            //            menu.Update(gameTime);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        MediaPlayer.Pause();
-            //        startScreen.Update(gameTime);
-                    
-            //    }
-            //}
-            //else
-            //{
-            //    MediaPlayer.Pause();
-            //    gameOverScreen.Update(gameTime);
-            //}
-            bg.Update(gameTime);
+            
+            _bg.Update(gameTime);
             
             
 
@@ -489,92 +400,47 @@ namespace ProjectGameDev
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin(sortMode: default, null, SamplerState.PointClamp);
-            levels[currentLevel - 1].DrawBg(_spriteBatch);
+            _levels[CurrentLevel - 1].DrawBg(_spriteBatch);
             _spriteBatch.End();
-            switch (gameState)
+            switch (GameState)
             {
                 case GameState.death:
                     _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    gameOverScreen.Draw(_spriteBatch);
+                    _gameOverScreen.Draw(_spriteBatch);
                     _spriteBatch.End();
                     break;
                 case GameState.start:
                     _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    startScreen.Draw(_spriteBatch);
+                    _startScreen.Draw(_spriteBatch);
                     _spriteBatch.End();
                     break;
                 case GameState.pauze:
                     _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    menu.Draw(_spriteBatch);
+                    _menu.Draw(_spriteBatch);
                     _spriteBatch.End();
                     break;
                 case GameState.reset:
                     break;
                 case GameState.won:
                     _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    victoryScreen.Draw(_spriteBatch);
+                    _victoryScreen.Draw(_spriteBatch);
                     _spriteBatch.End();
                     break;
                 case GameState.playing:
                     // TODO: Add your drawing code here
                     _spriteBatch.Begin(sortMode: default, null, SamplerState.PointClamp, transformMatrix: _camera.Transform);
-                    hero.Draw(_spriteBatch);
-                    levels[currentLevel - 1].Draw(_spriteBatch);
+                    _hero.Draw(_spriteBatch);
+                    _levels[CurrentLevel - 1].Draw(_spriteBatch);
 
                     _spriteBatch.End();
 
                     _spriteBatch.Begin(sortMode: default, null, SamplerState.PointClamp);
-                    hero.healthbar.Draw(_spriteBatch);
+                    _hero.Healthbar.Draw(_spriteBatch);
                     _spriteBatch.End();
 
                     base.Draw(gameTime);
                     break;
             }
-            //if (!death)
-            //{
-            //    if (start)
-            //    {
-            //        if (!pauze)
-            //        {
-                       
-                        
-
-            //            // TODO: Add your drawing code here
-            //            _spriteBatch.Begin(sortMode: default, null, SamplerState.PointClamp, transformMatrix: _camera.Transform);
-            //            hero.Draw(_spriteBatch);
-            //            levels[currentLevel - 1].Draw(_spriteBatch);
-
-            //            _spriteBatch.End();
-
-            //            _spriteBatch.Begin(sortMode: default, null, SamplerState.PointClamp);
-            //            healthbar.Draw(_spriteBatch);
-            //            _spriteBatch.End();
-
-            //            base.Draw(gameTime);
-            //        }
-            //        else
-            //        {
-            //            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            //            menu.Draw(_spriteBatch);
-            //            _spriteBatch.End();
-            //        }
-            //    }
-            //    else
-            //    {
-            //        _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            //        startScreen.Draw(_spriteBatch);
-                    
-            //        _spriteBatch.End();
-            //    }
-
-            //}
-            //else
-            //{
-            //    _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            //    gameOverScreen.Draw(_spriteBatch);
-            //    _spriteBatch.End();
-            //}
-            
 
 
         }

@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ProjectGameDev.Entities.HeroDesign;
+using ProjectGameDev.Levels;
 using SharpDX.XAudio2;
 
-namespace ProjectGameDev
+namespace ProjectGameDev.Extra
 {
     //STOLEN CODE
     internal class Camera
@@ -17,17 +19,17 @@ namespace ProjectGameDev
 
         public void Follow(Hero target)
         {
-            var position = Matrix.CreateTranslation(
-                -target.positie.X - (target.width * 3 / 2),
-                -target.positie.Y - (target.height * 3 / 2),
+            var Position = Matrix.CreateTranslation(
+                -target.Position.X - target.Width * 3 / 2,
+                -target.Position.Y - target.Height * 3 / 2,
                 0);
 
             var offset = Matrix.CreateTranslation(
-                Game1.screenwidth / 2,
-                Game1.screenHeight / 2,
+                Game1.ScreenWidth / 2,
+                Game1.ScreenHeight / 2,
                 0);
 
-            Transform = position * offset;
+            Transform = Position * offset;
 
 
 

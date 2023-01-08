@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct2D1;
+using ProjectGameDev.Interfaces;
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 
-namespace ProjectGameDev
+namespace ProjectGameDev.Entities.HeroDesign
 {
     internal class HealthBar:IGameObject
     {
         private List<Heart> hearts = new List<Heart>();
         private int schijfOp = 100;
-        private int health;
+        private int Health;
         
         public HealthBar(Texture2D HeartTexture, int nHearts)
         {
-            health = nHearts * 2;
+            Health = nHearts * 2;
             for (int i = 0; i < nHearts; i++)
             {
                 hearts.Add(new Heart(HeartTexture, new Vector2(20 + schijfOp * i,20)));
@@ -50,12 +46,12 @@ namespace ProjectGameDev
             {
                 if (hearts[i].LowerHealth())
                 {
-                    health--;
+                    Health--;
                     break;
                 }
 
             }
-            if (health <= 0)
+            if (Health <= 0)
             {
                 return false;
             }
