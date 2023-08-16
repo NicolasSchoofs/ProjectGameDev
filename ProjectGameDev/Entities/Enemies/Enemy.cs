@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using System.IO;
 using ProjectGameDev.Levels;
 using ProjectGameDev.Entities;
+using ProjectGameDev.Entities.Animation;
 using ProjectGameDev.Entities.HeroDesign;
 using ProjectGameDev.Interfaces;
 
@@ -61,22 +62,22 @@ namespace ProjectGameDev.Enemies
         public virtual void Reset()
         {
             Health = 3;
-            Action = Action.run;
+            Action = ActionState.run;
         }
         public virtual void CheckForHero(Hero target)
         {
-            if (Action != Action.death && Action != Action.hit)
+            if (Action != ActionState.death && Action != ActionState.hit)
             {
 
                 if (State == State.right)
                 {
                     if (target.Position.X >= Position.X && target.Position.X <= Position.X + 250)
                     {
-                        Action = Action.attack;
+                        Action = ActionState.attack;
                     }
                     else
                     {
-                        Action = Action.run;
+                        Action = ActionState.run;
                     }
                 }
 
@@ -84,11 +85,11 @@ namespace ProjectGameDev.Enemies
                 {
                     if (target.Position.X <= Position.X && target.Position.X >= Position.X - 250)
                     {
-                        Action = Action.attack;
+                        Action = ActionState.attack;
                     }
                     else
                     {
-                        Action = Action.run;
+                        Action = ActionState.run;
                     }
                 }
             }
@@ -96,7 +97,7 @@ namespace ProjectGameDev.Enemies
 
         public virtual bool CheckForAttackCollision(Hero target)
         {
-            if (Action == Action.death || Action == Action.hit)
+            if (Action == ActionState.death || Action == ActionState.hit)
             {
                 return false;
             }
@@ -114,7 +115,7 @@ namespace ProjectGameDev.Enemies
 
         public override void Move()
         {
-            if (Action != Action.death && Action != Action.hit)
+            if (Action != ActionState.death && Action != ActionState.hit)
             {
                 switch (State)
                 {

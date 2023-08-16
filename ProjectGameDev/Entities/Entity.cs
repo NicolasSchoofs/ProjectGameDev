@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using ProjectGameDev.Enemies;
+using ProjectGameDev.Entities.Animation;
 using SharpDX.XAudio2;
 
 namespace ProjectGameDev.Entities
 {
     internal abstract class Entity
     {
-        public Action Action;
+        public ActionState Action;
         public int Health = 3;
         public int Height, Width;
         public SpriteEffects SpriteEffect;
@@ -78,10 +79,10 @@ namespace ProjectGameDev.Entities
 
         public virtual void TakeDamage()
         {
-            if (Action != Action.hit && Action != Action.death)
+            if (Action != ActionState.hit && Action != ActionState.death)
             {
                 Health--;
-                Action = Action.hit;
+                Action = ActionState.hit;
             }
         }
 
@@ -97,14 +98,14 @@ namespace ProjectGameDev.Entities
 
         public virtual void Die()
         {
-            Action = Action.death;
+            Action = ActionState.death;
         }
 
         public virtual void Fall()
         {
             if (Position.Y > 3000)
             {
-                Action = Action.death;
+                Action = ActionState.death;
             }
 
             if (Position.Y == GroundLevel - Height * 3) return;
@@ -150,32 +151,32 @@ namespace ProjectGameDev.Entities
 
         public virtual void Move()
         {
-            if (Action != Action.death && Action != Action.attack)
+            if (Action != ActionState.death && Action != ActionState.attack)
             {
 
-                if (Action != Action.hit)
+                if (Action != ActionState.hit)
                 {
                     if (Speed != Vector2.Zero)
                     {
                         if (Speed.Y < 0)
                         {
-                            Action = Action.jump;
+                            Action = ActionState.jump;
                         }
                         else if (Speed.Y > 0)
                         {
-                            Action = Action.fall;
+                            Action = ActionState.fall;
                         }
                         else
                         {
-                            Action = Action.run;
+                            Action = ActionState.run;
                         }
 
 
                     }
 
-                    else if (Action != Action.attack)
+                    else if (Action != ActionState.attack)
                     {
-                        Action = Action.idle;
+                        Action = ActionState.idle;
                     }
 
                 }

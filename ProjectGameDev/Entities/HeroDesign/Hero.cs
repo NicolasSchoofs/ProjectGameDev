@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -12,11 +13,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ProjectGameDev.Animations;
 using ProjectGameDev.Enemies;
 using ProjectGameDev.Entities;
+using ProjectGameDev.Entities.Animation;
 using ProjectGameDev.Interfaces;
 using SharpDX;
 using SharpDX.Direct2D1;
@@ -30,29 +33,12 @@ using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 using Timer = SharpDX.MediaFoundation.Timer;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
-enum Action
-{
-    idle,
-    run,
-    jump,
-    fall,
-    death,
-    hit,
-    attack
-}
+
 namespace ProjectGameDev.Entities.HeroDesign
 {
     internal class Hero : Entity, IGameObject
     {
-
-        private Texture2D textureIdle;
-        private Texture2D textureRun;
-        private Texture2D textureJump;
-        private Texture2D textureFall;
-        private Texture2D textureAttack;
-
-        private Texture2D textureDeath;
-        private Texture2D textureTakeHit;
+        private AnimationManager animationManager = new AnimationManager();
 
 
         public int NLoopsHit = 0, NLoopsDeath = 0;
@@ -61,15 +47,6 @@ namespace ProjectGameDev.Entities.HeroDesign
         private int screenHeight = 720;
         private int screenWidth = 1280;
 
-        
-
-        private Animation idle;
-        private Animation run;
-        private Animation jump;
-        private Animation fall;
-        private Animation attack;
-        private Animation death;
-        private Animation takeHit;
 
 
 
@@ -92,7 +69,7 @@ namespace ProjectGameDev.Entities.HeroDesign
         private int schuifOp_X = 150;
 
 
-        public Hero(Texture2D textureIdle, Texture2D textureRun, Texture2D textureJump, Texture2D textureFall, Texture2D textureAttack1, Texture2D textureAttack2, Texture2D textureAttack3, Texture2D textureAttack4, Texture2D textureDeath, Texture2D textureTakeHit, HealthBar Healthbar)
+        public Hero(HealthBar Healthbar, ContentManager content)
         {
             RunningSpeed = 8;
             Width = 30;
@@ -106,78 +83,36 @@ namespace ProjectGameDev.Entities.HeroDesign
             BoundingBox = new Rectangle(Convert.ToInt16(Position.X), Convert.ToInt16(Position.Y), Width * 3, Height * 3);
             AttackHitbox = new Rectangle(Convert.ToInt16(BoundingBox.Right), Convert.ToInt16(BoundingBox.Y), 30, 50);
 
-            Action = Action.idle;
+            Action = ActionState.idle;
             
             Gravity = new Vector2(0, 1);
             GravityAcceleration = new Vector2(0, 0.1f);
             TerminalVelocity = new Vector2(0, 2.5f);
 
-            //idle
-            this.textureIdle = textureIdle;
-            idle = new Animation();
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX, startY, Width, Height)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X, startY, Width, Height)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 2, startY, Width, Height)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 3, startY, Width, Height)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 4, startY, Width, Height)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 5, startY, Width, Height)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 6, startY, Width, Height)));
-            idle.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 7, startY, Width, Height)));
-
-            //run
-            this.textureRun = textureRun;
-            run = new Animation();
-            run.AddFrame(new AnimationFrame(new Rectangle(startX, startY, Width, Height)));
-            run.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X, startY, Width, Height)));
-            run.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 2, startY, Width, Height)));
-            run.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 3, startY, Width, Height)));
-            run.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 4, startY, Width, Height)));
-            run.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 5, startY, Width, Height)));
-            run.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 6, startY, Width, Height)));
-            run.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 7, startY, Width, Height)));
-
-            //jump
-            this.textureJump = textureJump;
-            jump = new Animation();
-            jump.AddFrame(new AnimationFrame(new Rectangle(startX, startY, Width, Height)));
-            jump.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X, startY, Width, Height)));
-
-
-            //fall
-            this.textureFall = textureFall;
-            fall = new Animation();
-            fall.AddFrame(new AnimationFrame(new Rectangle(startX, startY, Width, Height)));
-            fall.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X, startY, Width, Height)));
-
-
-            //attack
-            this.textureAttack = textureAttack1;
-            attack = new Animation();
-            attack.AddFrame(new AnimationFrame(new Rectangle(30, 20, attackWidth, attackHeight)));
-            attack.AddFrame(new AnimationFrame(new Rectangle(30 + schuifOp_X, 20, attackWidth, attackHeight)));
-            attack.AddFrame(new AnimationFrame(new Rectangle(30 + schuifOp_X * 2, 20, attackWidth, attackHeight)));
-            attack.AddFrame(new AnimationFrame(new Rectangle(30 + schuifOp_X * 3, 20, attackWidth, attackHeight)));
-
-
-            //death
-            this.textureDeath = textureDeath;
-            death = new Animation();
-            death.AddFrame(new AnimationFrame(new Rectangle(startX, startY, 53, Height)));
-            death.AddFrame(new AnimationFrame(new Rectangle(startX + 143, startY, 53, Height)));
-            death.AddFrame(new AnimationFrame(new Rectangle(startX + 143 * 2, startY, 53, Height)));
-            death.AddFrame(new AnimationFrame(new Rectangle(startX + 143 * 3, startY, 53, Height)));
-            death.AddFrame(new AnimationFrame(new Rectangle(startX + 143 * 4, startY, 53, Height)));
-            death.AddFrame(new AnimationFrame(new Rectangle(startX + 143 * 5, startY, 53, Height)));
+            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Idle"),ActionState.idle, startX, startY, schuifOp_X, Width, Height, 8, BoundingBox);
 
 
 
-            //take hit
-            this.textureTakeHit = textureTakeHit;
-            takeHit = new Animation();
-            takeHit.AddFrame(new AnimationFrame(new Rectangle(startX, startY, Width, Height)));
-            takeHit.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X, startY, Width, Height)));
-            takeHit.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 2, startY, Width, Height)));
-            takeHit.AddFrame(new AnimationFrame(new Rectangle(startX + schuifOp_X * 3, startY, Width, Height)));
+            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Run"), ActionState.run, startX, startY, schuifOp_X, Width, Height, 8, BoundingBox);
+
+
+            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Jump"), ActionState.jump, startX, startY, schuifOp_X, Width, Height, 2, BoundingBox);
+      
+
+
+            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Fall"), ActionState.fall, startX, startY, schuifOp_X, Width, Height, 2, BoundingBox);
+          
+
+
+            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Attack1"), ActionState.attack, 30, 20, schuifOp_X, attackWidth, attackHeight, 4, BoundingBox);
+    
+
+
+            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Death"), ActionState.death, startX, startY, 143, 53, Height, 6, BoundingBox);
+     
+
+            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Take Hit"), ActionState.hit, startX, startY, 143, 53, Height, 4, BoundingBox);
+      
 
         }
 
@@ -185,39 +120,39 @@ namespace ProjectGameDev.Entities.HeroDesign
         {
             Position = new Vector2(700, 200);
             this.Healthbar = Healthbar;
-            Action = Action.idle;
+            Action = ActionState.idle;
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
             switch (Action)
             {
-                case Action.idle:
-                    spriteBatch.Draw(textureIdle, Position, idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.idle:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.run:
-                    spriteBatch.Draw(textureRun, Position, run.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.run:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.jump:
-                    spriteBatch.Draw(textureJump, Position, jump.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.jump:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.fall:
-                    spriteBatch.Draw(textureFall, Position, fall.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.fall:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.attack:
+                case ActionState.attack:
                     if (SpriteEffect == SpriteEffects.FlipHorizontally)
                     {
-                        spriteBatch.Draw(textureAttack, new Vector2(Position.X - 145, Position.Y - 2), attack.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                        spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 145, Position.Y - 2), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     }
                     else
                     {
-                        spriteBatch.Draw(textureAttack, new Vector2(Position.X - 90, Position.Y - 2), attack.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                        spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 90, Position.Y - 2), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     }
                     break;
-                case Action.hit:
-                    spriteBatch.Draw(textureTakeHit, Position, takeHit.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.hit:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.death:
-                    spriteBatch.Draw(textureDeath, Position, death.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.death:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -237,34 +172,43 @@ namespace ProjectGameDev.Entities.HeroDesign
 
             Collided = false;
 
-          
-
 
             KeyboardState State = Keyboard.GetState();
-            if (State.IsKeyUp(Keys.W) && Action == Action.attack)
+           
+            if (Action != ActionState.attack)
             {
-                if (attack.NLoops >= 1)
+                if (Action == ActionState.hit)
                 {
-                    attack.NLoops = 0;
-                    attack.CurrentFrame = attack.Frames[0];
-                    Action = Action.idle;
+                    if (animationManager.currentAnimation.NLoops >= 2)
+                    {
+                        animationManager.currentAnimation.NLoops = 0;
+                        animationManager.currentAnimation.IsComplete = false;
+                        Action = ActionState.idle;
+                        animationManager.currentAnimation = animationManager.GetAnimation(ActionState.idle); // Set idle animation
+                    }
                 }
-            }
-            if (Action != Action.attack)
-            {
+
+                if (animationManager.currentAnimation.IsComplete)
+                {
+                    animationManager.currentAnimation.IsComplete = false;
+                    animationManager.currentAnimation.NLoops = 0;
+                }
+
+              
+               
+
+                // Handle movement and other actions
                 if (State.IsKeyDown(Keys.Left))
                 {
                     Speed.X = -RunningSpeed;
                     SpriteEffect = SpriteEffects.FlipHorizontally;
                 }
-
-                if (State.IsKeyDown(Keys.Right))
+                else if (State.IsKeyDown(Keys.Right))
                 {
                     Speed.X = RunningSpeed;
                     SpriteEffect = SpriteEffects.None;
                 }
-
-                if (State.IsKeyUp(Keys.Left) && State.IsKeyUp(Keys.Right))
+                else
                 {
                     Speed.X = 0;
                 }
@@ -278,10 +222,24 @@ namespace ProjectGameDev.Entities.HeroDesign
                 {
                     Game1.GameState = GameState.pauze;
                 }
+
+                if (State.IsKeyDown(Keys.Space) && Action != ActionState.hit && Action != ActionState.jump && Action != ActionState.fall)
+                {
+                    Action = ActionState.attack;
+                }
             }
-            if (State.IsKeyDown(Keys.Space) && Action != Action.hit && Action != Action.jump && Action != Action.fall)
+            else 
             {
-                Action = Action.attack;
+                if (animationManager.currentAnimation.NLoops >= 1)
+                {
+                    animationManager.currentAnimation.NLoops = 0;
+                    animationManager.currentAnimation.IsComplete = false;
+                    Action = ActionState.idle;
+                    animationManager.currentAnimation = animationManager.GetAnimation(ActionState.idle); // Set idle animation
+                }
+
+
+
             }
             Move();
             UpdateBoundingBox();
@@ -289,51 +247,7 @@ namespace ProjectGameDev.Entities.HeroDesign
 
 
 
-
-
-            switch (Action)
-            {
-                case Action.idle:
-                    idle.Update(gameTime);
-                    break;
-                case Action.run:
-                    run.Update(gameTime);
-                    break;
-                case Action.jump:
-                    jump.Update(gameTime);
-                    break;
-                case Action.fall:
-                    fall.Update(gameTime);
-                    break;
-                case Action.attack:
-                    attack.Update(gameTime);
-                    break;
-                case Action.hit:
-                    if (!(takeHit.NLoops >= 2))
-                    {
-                        takeHit.Update(gameTime);
-                    }
-                    else
-                    {
-                        takeHit.NLoops = 0;
-                        Action = Action.idle;
-                    }
-                    break;
-                case Action.death:
-                    if (!(death.NLoops >= 1))
-                    {
-                        death.Update(gameTime);
-
-                    }
-                    else
-                    {
-                        death.NLoops = 0;
-                        Game1.GameState = GameState.death;
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            animationManager.Update(gameTime, Action);
 
 
 
@@ -359,7 +273,7 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         public void Fall()
         {
-            if (Action == Action.attack)
+            if (Action == ActionState.attack)
             {
                 if (Position.Y == GroundLevel - attackHeight * 3) return;
 
@@ -395,9 +309,9 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         public override void TakeDamage()
         {
-            if (Action != Action.hit)
+            if (Action != ActionState.hit)
             {
-                Action = Action.hit;
+                Action = ActionState.hit;
 
                 if (!Healthbar.LowerHealth())
                 {
@@ -411,7 +325,7 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         public override void AttackEnemy(Enemy target)
         {
-            if (Action == Action.attack)
+            if (Action == ActionState.attack)
             {
                 base.AttackEnemy(target);
             }
@@ -420,7 +334,7 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         private void Die()
         {
-            Action = Action.death;
+            Action = ActionState.death;
         }
 
 

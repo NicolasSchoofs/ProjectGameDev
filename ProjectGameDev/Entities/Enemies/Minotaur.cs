@@ -5,10 +5,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ProjectGameDev.Animations;
 using ProjectGameDev.Enemies;
+using ProjectGameDev.Entities.Animation;
 using ProjectGameDev.Entities.HeroDesign;
 using ProjectGameDev.Levels;
 using SharpDX;
@@ -23,11 +25,7 @@ namespace ProjectGameDev
 
     internal class Minotaur: Enemy
     {
-        private Texture2D _texture;
-        private Animation _run;
-        private Animation _attack;
-        private Animation _hit;
-        private Animation _death;
+        private AnimationManager animationManager = new AnimationManager();
 
 
         private int _startX = 25, _startY = 115;
@@ -38,7 +36,7 @@ namespace ProjectGameDev
         private int _deathStartX = 5, _deathStartY = 885;
 
 
-        public Minotaur(Texture2D minotaurTexture, Vector2 spawnLocation)
+        public Minotaur(Vector2 spawnLocation, ContentManager content)
         {
             Width = 55;
             Height = 45;
@@ -65,47 +63,21 @@ namespace ProjectGameDev
             GravityAcceleration = new Vector2(0, 0.1f);
             TerminalVelocity = new Vector2(0, 6);
 
-            Action = Action.run;
-            _texture = minotaurTexture;
-
-
+            Action = ActionState.run;
 
             //Run
-            _run = new Animation();
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX, _startY, Width, Height)));
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX + _schuifOpX, _startY, Width, Height)));
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX + _schuifOpX * 2, _startY, Width, Height)));
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX + _schuifOpX * 3, _startY, Width, Height)));
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX + _schuifOpX * 4, _startY, Width, Height)));
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX + _schuifOpX * 5, _startY, Width, Height)));
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX + _schuifOpX * 6, _startY, Width, Height)));
-            _run.AddFrame(new AnimationFrame(new Rectangle(_startX + _schuifOpX * 7, _startY, Width, Height)));
+            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Minotaur"), ActionState.run, _startX, _startY, _schuifOpX, Width, Height, 8, BoundingBox);
+    
 
-            //attack
-            _attack = new Animation();
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX * 2, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX * 3, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX * 4, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX * 5, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX * 6, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX * 7, _attackStartY, 90, 70)));
-            _attack.AddFrame(new AnimationFrame(new Rectangle(_attackStartX + _schuifOpX * 8, _attackStartY, 90, 70)));
+            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Minotaur"), ActionState.attack, _attackStartX, _attackStartY, _schuifOpX, 90, 70, 9, BoundingBox);
 
-            //hit
-            _hit = new Animation();
-            _hit.AddFrame(new AnimationFrame(new Rectangle(_hitStartX, _hitStartY, 90, 70)));
-            _hit.AddFrame(new AnimationFrame(new Rectangle(_hitStartX + _schuifOpX, _hitStartY, 90, 70)));
-            _hit.AddFrame(new AnimationFrame(new Rectangle(_hitStartX + _schuifOpX * 2, _hitStartY, 90, 70)));
-            //death
-            _death = new Animation();
-            _death.AddFrame(new AnimationFrame(new Rectangle(_deathStartX, _deathStartY, 90, 70)));
-            _death.AddFrame(new AnimationFrame(new Rectangle(_deathStartX + _schuifOpX, _deathStartY, 90, 70)));
-            _death.AddFrame(new AnimationFrame(new Rectangle(_deathStartX + _schuifOpX * 2, _deathStartY, 90, 70)));
-            _death.AddFrame(new AnimationFrame(new Rectangle(_deathStartX + _schuifOpX * 3, _deathStartY, 90, 70)));
-            _death.AddFrame(new AnimationFrame(new Rectangle(_deathStartX + _schuifOpX * 4, _deathStartY, 90, 70)));
-            _death.AddFrame(new AnimationFrame(new Rectangle(_deathStartX + _schuifOpX * 5, _deathStartY, 90, 70)));
+
+            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Minotaur"), ActionState.hit, _hitStartX, _hitStartY, _schuifOpX, 90, 70, 3, BoundingBox);
+    
+
+            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Minotaur"), ActionState.death, _deathStartX, _deathStartY, _schuifOpX, 90, 70, 6, BoundingBox);
+            animationManager.currentAnimation = animationManager.GetAnimation(ActionState.run);
+
 
         }
         public override void Update(GameTime gameTime)
@@ -123,26 +95,31 @@ namespace ProjectGameDev
             
             switch (Action)
             {
-                case Action.run:
+                case ActionState.run:
                     Fall();
                     Move();
                     UpdateBoundingBox();
-                    _run.Update(gameTime);
+                    animationManager.currentAnimation.Update(gameTime);
                     break;
-                case Action.attack:
-                    _attack.Update(gameTime);
+                case ActionState.attack:
+                    animationManager.currentAnimation.Update(gameTime);
                     break;
-                case Action.hit:
-                    if (!(_hit.NLoops >= 6))
+                case ActionState.hit:
+                    if (!(animationManager.currentAnimation.NLoops >= 6))
                     {
-                        _hit.Update(gameTime);
+                        animationManager.currentAnimation.Update(gameTime);
                     }
                     else
                     {
-                        _hit.NLoops = 0;
+                        animationManager.currentAnimation.NLoops = 0;
                         if (Health > 0)
                         {
-                            Action = Action.run;
+                            if (animationManager.currentAnimation.IsComplete)
+                            {
+                                animationManager.currentAnimation.NLoops = 0;
+                                animationManager.currentAnimation.IsComplete = false;
+                                Action = ActionState.run;
+                            }
                         }
                         else
                         {
@@ -151,31 +128,34 @@ namespace ProjectGameDev
 
                     }
                     break;
-                case Action.death:
-                    if (!(_death.NLoops >= 1))
+                case ActionState.death:
+                    if (!(animationManager.currentAnimation.NLoops >= 1))
                     {
-                        _death.Update(gameTime);
+                        animationManager.currentAnimation.Update(gameTime);
                     }
                     break;
             }
+
+
+            animationManager.Update(gameTime, Action);
         }
 
       
 
         public override void CheckForHero(Hero target)
         {
-            if (Action != Action.death && Action != Action.hit)
+            if (Action != ActionState.death && Action != ActionState.hit)
             {
             
                 if (State == State.right)
                 {
                     if (target.Position.X >= Position.X && target.Position.X <= Position.X + 250)
                     {
-                        Action = Action.attack;
+                        Action = ActionState.attack;
                     }
                     else
                     {
-                        Action = Action.run;
+                        Action = ActionState.run;
                     }
                 }
 
@@ -183,11 +163,11 @@ namespace ProjectGameDev
                 {
                     if (target.Position.X <= Position.X && target.Position.X >= Position.X - 250)
                     {
-                        Action = Action.attack;
+                        Action = ActionState.attack;
                     }
                     else
                     {
-                        Action = Action.run;
+                        Action = ActionState.run;
                     }
                 }
             }
@@ -210,17 +190,17 @@ namespace ProjectGameDev
         {
             switch (Action)
             {
-                case Action.run:
-                    spriteBatch.Draw(_texture, Position, _run.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.run:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.attack:
-                    spriteBatch.Draw(_texture, new Vector2(Position.X - 50, Position.Y- 50), _attack.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.attack:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 50, Position.Y- 50), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.hit:
-                    spriteBatch.Draw(_texture, new Vector2(Position.X - 50, Position.Y), _hit.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.hit:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 50, Position.Y), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.death:
-                    spriteBatch.Draw(_texture, Position, _death.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.death:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
             }
         }
@@ -228,7 +208,7 @@ namespace ProjectGameDev
 
         public override void AttackHero(Hero target)
         {
-            if (Action == Action.attack)
+            if (Action == ActionState.attack)
             {
                 base.AttackHero(target);
             }
@@ -237,7 +217,7 @@ namespace ProjectGameDev
         public override void Reset()
         {
             Health = 3;
-            Action = Action.run;
+            Action = ActionState.run;
         }
 
     }

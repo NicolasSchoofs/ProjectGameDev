@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ProjectGameDev.Animations;
 using ProjectGameDev.Enemies;
+using ProjectGameDev.Entities.Animation;
 using ProjectGameDev.Entities.HeroDesign;
 using ProjectGameDev.Levels;
 using SharpDX;
@@ -28,17 +31,10 @@ namespace ProjectGameDev
     }
     internal class Slime:Enemy
     {
-        private Texture2D _textureIdle;
-
-       
+        private AnimationManager animationManager = new AnimationManager();
 
 
-
-        private Animation _idle;
-
-       
-
-        public Slime(Texture2D textuIdle, Vector2 spawnLocation)
+        public Slime(Vector2 spawnLocation, ContentManager content)
         {
             GroundLevel = 720;
             WallRight = 9999;
@@ -53,22 +49,17 @@ namespace ProjectGameDev
             
             BoundingBox = new Rectangle(Convert.ToInt16(Position.X), Convert.ToInt16(Position.Y), Width * 3, Height * 3);
             AttackHitbox = BoundingBox;
-            Action = Action.run;
+            Action = ActionState.run;
             
 
             Gravity = new Vector2(0, 1);
             GravityAcceleration = new Vector2(0, 0.1f);
             TerminalVelocity = new Vector2(0, 10);
 
-            this._textureIdle = textuIdle;
-            _idle = new Animation();
-            _idle.AddFrame(new AnimationFrame(new Rectangle(20, 30, Width, Height)));
-            _idle.AddFrame(new AnimationFrame(new Rectangle(100, 30, Width, Height)));
-            _idle.AddFrame(new AnimationFrame(new Rectangle(180, 30, Width, Height)));
-            _idle.AddFrame(new AnimationFrame(new Rectangle(260, 30, Width, Height)));
-            _idle.AddFrame(new AnimationFrame(new Rectangle(340, 30, Width, Height)));
-            _idle.AddFrame(new AnimationFrame(new Rectangle(420, 30, Width, Height)));
-            _idle.AddFrame(new AnimationFrame(new Rectangle(500, 30, Width, Height)));
+
+            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/slime_idle2"), ActionState.run, 20, 30, 80, Width, Height, 7, BoundingBox);
+            animationManager.currentAnimation = animationManager.GetAnimation(ActionState.run);
+
         }
 
         public override void Update(GameTime gameTime)
@@ -85,21 +76,22 @@ namespace ProjectGameDev
             
             switch (Action)
             {
-                case Action.run:
+                case ActionState.run:
                     //movement
                     Move();
                     Fall();
                     UpdateBoundingBox();
-                    _idle.Update(gameTime);
+                    animationManager.currentAnimation.Update(gameTime);
                     break;
-                case Action.hit:
-                    Action = Action.death;
+                case ActionState.hit:
+                    Action = ActionState.death;
                     break;
-                case Action.death:
+                case ActionState.death:
                     break;
 
             }
-            
+
+            animationManager.Update(gameTime, Action);
         }
 
         public override void UpdateBoundingBox()
@@ -114,10 +106,10 @@ namespace ProjectGameDev
         {
             switch (Action)
             {
-                case Action.run:
-                    spriteBatch.Draw(_textureIdle, Position, _idle.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
+                case ActionState.run:
+                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
                     break;
-                case Action.death:
+                case ActionState.death:
                     break;
             }
             
@@ -126,7 +118,7 @@ namespace ProjectGameDev
         public override void Reset()
         {
             Health = 1;
-            Action = Action.run;
+            Action = ActionState.run;
         }
 
         public override void CheckForHero(Hero target)

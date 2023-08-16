@@ -26,16 +26,16 @@ namespace ProjectGameDev
     }
     public class Game1 : Game
     {
-        private Texture2D _heroTextureIdle;
-        private Texture2D _heroTextureRun;
-        private Texture2D _heroTextureJump;
-        private Texture2D _heroTextureFall;
-        private Texture2D _heroTextureAttack1;
-        private Texture2D _heroTextureAttack2;
-        private Texture2D _heroTextureAttack3;
-        private Texture2D _heroTextureAttack4;
-        private Texture2D _heroTextureDeath;
-        private Texture2D _heroTextureTakeHit;
+        //private Texture2D _heroTextureIdle;
+        //private Texture2D _heroTextureRun;
+        //private Texture2D _heroTextureJump;
+        //private Texture2D _heroTextureFall;
+        //private Texture2D _heroTextureAttack1;
+        //private Texture2D _heroTextureAttack2;
+        //private Texture2D _heroTextureAttack3;
+        //private Texture2D _heroTextureAttack4;
+        //private Texture2D _heroTextureDeath;
+        //private Texture2D _heroTextureTakeHit;
         private Texture2D _heartTexture;
         private Texture2D _menuTexture;
         private Texture2D _bgTexture;
@@ -154,26 +154,11 @@ namespace ProjectGameDev
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            //hero
-            _heroTextureIdle = Content.Load<Texture2D>("Hero/Idle");
-            _heroTextureRun = Content.Load<Texture2D>("Hero/Run");
-            _heroTextureJump = Content.Load<Texture2D>("Hero/Jump");
-            _heroTextureFall = Content.Load<Texture2D>("Hero/Fall");
-            _heroTextureAttack1 = Content.Load<Texture2D>("Hero/Attack1");
-            _heroTextureAttack2 = Content.Load<Texture2D>("Hero/Attack2");
-            _heroTextureAttack3 = Content.Load<Texture2D>("Hero/Attack3");
-            _heroTextureAttack4 = Content.Load<Texture2D>("Hero/Attack4");
-            _heroTextureDeath = Content.Load<Texture2D>("Hero/Death");
-            _heroTextureTakeHit = Content.Load<Texture2D>("Hero/Take Hit");
 
-            _minotaurTexture = Content.Load<Texture2D>("Enemies/Minotaur");
-            _skeletonTexture = Content.Load<Texture2D>("Enemies/Skeleton");
 
             _plainsSong = Content.Load<Song>("Music/Funky Forest");
             _castleSong = Content.Load<Song>("Music/Sen's Fortress");
             
-
-
 
             _heartTexture = Content.Load<Texture2D>("Hero/Heart");
             _menuTexture = Content.Load<Texture2D>("Menu/Menu");
@@ -193,20 +178,15 @@ namespace ProjectGameDev
             _tilesetMarioWorld = Content.Load<Texture2D>("Levels/tilesMarioWorld");
 
 
-     
-
-
-
-
             _graphics.PreferredBackBufferWidth = ScreenWidth;
             _graphics.PreferredBackBufferHeight = ScreenHeight;
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
             _graphics.ApplyChanges();
 
 
             base.Initialize();
             _healthbar = new HealthBar(_heartTexture, 3);
-            _hero = new Hero(_heroTextureIdle, _heroTextureRun, _heroTextureJump, _heroTextureFall, _heroTextureAttack1, _heroTextureAttack2, _heroTextureAttack3, _heroTextureAttack4, _heroTextureDeath, _heroTextureTakeHit, _healthbar);
+            _hero = new Hero(_healthbar,Content);
 
 
             _menu = new Menu(_menuTexture, _font);
@@ -221,12 +201,12 @@ namespace ProjectGameDev
 
             //enemies level1
 
-            _slime1 = new Slime(_slimeIdle, new Vector2(1500, 100));
-            _slime2 = new Slime(_slimeIdle, new Vector2(2500, 100));
-            _slime3 = new Slime(_slimeIdle, new Vector2(5000, 100));
-            _slime4 = new Slime(_slimeIdle, new Vector2(5500, 100));
+            _slime1 = new Slime(new Vector2(1500, 100), Content);
+            _slime2 = new Slime(new Vector2(2500, 100), Content);
+            _slime3 = new Slime(new Vector2(5000, 100), Content);
+            _slime4 = new Slime(new Vector2(5500, 100), Content);
 
-            _minotaur1 = new Minotaur(_minotaurTexture, new Vector2(3200, 100));
+            _minotaur1 = new Minotaur(new Vector2(3200, 100), Content);
             
 
             _enemiesLevel1.Add(_slime1);
@@ -237,13 +217,13 @@ namespace ProjectGameDev
 
             //enemies level2
 
-            _skeleton1 = new Skeleton(_skeletonTexture, new Vector2(1300, 100));
-            _skeleton2 = new Skeleton(_skeletonTexture, new Vector2(1800, 400));
-            _skeleton3 = new Skeleton(_skeletonTexture, new Vector2(1900, 400));
-            _skeleton4 = new Skeleton(_skeletonTexture, new Vector2(3500, 100));
+            _skeleton1 = new Skeleton(new Vector2(1300, 100), Content);
+            _skeleton2 = new Skeleton(new Vector2(1800, 400), Content);
+            _skeleton3 = new Skeleton(new Vector2(1900, 400), Content);
+            _skeleton4 = new Skeleton(new Vector2(3500, 100), Content);
 
-            _minotaur2 = new Minotaur(_minotaurTexture, new Vector2(3200, 100));
-            _minotaur3 = new Minotaur(_minotaurTexture, new Vector2(5000, 100));
+            _minotaur2 = new Minotaur(new Vector2(3200, 100), Content);
+            _minotaur3 = new Minotaur(new Vector2(5000, 100), Content);
 
             _enemiesLevel2.Add(_skeleton1);
             _enemiesLevel2.Add(_skeleton2);
