@@ -38,7 +38,7 @@ namespace ProjectGameDev.Entities.HeroDesign
 {
     internal class Hero : Entity, IGameObject
     {
-        private AnimationManager animationManager = new AnimationManager();
+        
 
 
         public int NLoopsHit = 0, NLoopsDeath = 0;
@@ -46,6 +46,8 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         private int screenHeight = 720;
         private int screenWidth = 1280;
+
+
 
 
 
@@ -59,11 +61,8 @@ namespace ProjectGameDev.Entities.HeroDesign
         private int attackWidth = 110;
         private int attackHeight = 75;
 
-        private int startY = 50;
-        private int startX = 60;
-
-
-
+        private int startY = 20;
+        private int startX = 20;
 
 
         private int schuifOp_X = 150;
@@ -71,16 +70,18 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         public Hero(HealthBar Healthbar, ContentManager content)
         {
+
+            offset = new Vector2(120, 115);
             RunningSpeed = 8;
             Width = 30;
-            Height = 45;
+            Height = 37;
             this.Healthbar = Healthbar;
 
-            Position = new Vector2(700, 300);
+            Position = new Vector2(700, 400);
             Speed = new Vector2(1, 1);
             int a = Width * 3;
             int b = Height * 3;
-            BoundingBox = new Rectangle(Convert.ToInt16(Position.X), Convert.ToInt16(Position.Y), Width * 3, Height * 3);
+            BoundingBox = new Rectangle(Convert.ToInt16(Position.X) + Convert.ToInt16(offset.X), Convert.ToInt16(Position.Y) + Convert.ToInt16(offset.Y), Width * 3, Height * 3);
             AttackHitbox = new Rectangle(Convert.ToInt16(BoundingBox.Right), Convert.ToInt16(BoundingBox.Y), 30, 50);
 
             Action = ActionState.idle;
@@ -89,29 +90,29 @@ namespace ProjectGameDev.Entities.HeroDesign
             GravityAcceleration = new Vector2(0, 0.1f);
             TerminalVelocity = new Vector2(0, 2.5f);
 
-            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Idle"),ActionState.idle, startX, startY, schuifOp_X, Width, Height, 8, BoundingBox);
+            this._animationManager.AddAnimation(content.Load<Texture2D>("Hero/Idle"),ActionState.idle, startX, startY, schuifOp_X, attackWidth, attackHeight, 8);
 
 
 
-            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Run"), ActionState.run, startX, startY, schuifOp_X, Width, Height, 8, BoundingBox);
+            this._animationManager.AddAnimation(content.Load<Texture2D>("Hero/Run"), ActionState.run, startX, startY, schuifOp_X, attackWidth, attackHeight, 8);
 
 
-            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Jump"), ActionState.jump, startX, startY, schuifOp_X, Width, Height, 2, BoundingBox);
+            this._animationManager.AddAnimation(content.Load<Texture2D>("Hero/Jump"), ActionState.jump, startX, startY, schuifOp_X, attackWidth, attackHeight, 2);
       
 
 
-            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Fall"), ActionState.fall, startX, startY, schuifOp_X, Width, Height, 2, BoundingBox);
+            this._animationManager.AddAnimation(content.Load<Texture2D>("Hero/Fall"), ActionState.fall, startX, startY, schuifOp_X, attackWidth, attackHeight, 2);
           
 
 
-            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Attack1"), ActionState.attack, 30, 20, schuifOp_X, attackWidth, attackHeight, 4, BoundingBox);
+            this._animationManager.AddAnimation(content.Load<Texture2D>("Hero/Attack1"), ActionState.attack, startX, startY, schuifOp_X, attackWidth, attackHeight, 4);
     
 
 
-            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Death"), ActionState.death, startX, startY, 143, 53, Height, 6, BoundingBox);
+            this._animationManager.AddAnimation(content.Load<Texture2D>("Hero/Death"), ActionState.death, startX, startY, 143, attackWidth, attackHeight, 6);
      
 
-            this.animationManager.AddAnimation(content.Load<Texture2D>("Hero/Take Hit"), ActionState.hit, startX, startY, 143, 53, Height, 4, BoundingBox);
+            this._animationManager.AddAnimation(content.Load<Texture2D>("Hero/Take Hit"), ActionState.hit, startX, startY, 150, attackWidth, attackHeight, 4);
       
 
         }
@@ -120,44 +121,13 @@ namespace ProjectGameDev.Entities.HeroDesign
         {
             Position = new Vector2(700, 200);
             this.Healthbar = Healthbar;
+            Speed = new Vector2(1, 1);
+            Gravity = new Vector2(0, 1);
+            GravityAcceleration = new Vector2(0, 0.1f);
+            TerminalVelocity = new Vector2(0, 2.5f);
             Action = ActionState.idle;
         }
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            switch (Action)
-            {
-                case ActionState.idle:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                case ActionState.run:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                case ActionState.jump:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                case ActionState.fall:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                case ActionState.attack:
-                    if (SpriteEffect == SpriteEffects.FlipHorizontally)
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 145, Position.Y - 2), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 90, Position.Y - 2), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    break;
-                case ActionState.hit:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                case ActionState.death:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+    
 
         public override void Update(GameTime gameTime)
         {
@@ -179,25 +149,22 @@ namespace ProjectGameDev.Entities.HeroDesign
             {
                 if (Action == ActionState.hit)
                 {
-                    if (animationManager.currentAnimation.NLoops >= 2)
+                    if (_animationManager.currentAnimation.NLoops >= 2)
                     {
-                        animationManager.currentAnimation.NLoops = 0;
-                        animationManager.currentAnimation.IsComplete = false;
+                        _animationManager.currentAnimation.NLoops = 0;
+                        _animationManager.currentAnimation.IsComplete = false;
                         Action = ActionState.idle;
-                        animationManager.currentAnimation = animationManager.GetAnimation(ActionState.idle); // Set idle animation
+                        _animationManager.currentAnimation = _animationManager.GetAnimation(ActionState.idle); 
                     }
                 }
 
-                if (animationManager.currentAnimation.IsComplete)
+                if (_animationManager.currentAnimation.IsComplete)
                 {
-                    animationManager.currentAnimation.IsComplete = false;
-                    animationManager.currentAnimation.NLoops = 0;
+                    _animationManager.currentAnimation.IsComplete = false;
+                    _animationManager.currentAnimation.NLoops = 0;
                 }
 
-              
-               
 
-                // Handle movement and other actions
                 if (State.IsKeyDown(Keys.Left))
                 {
                     Speed.X = -RunningSpeed;
@@ -230,28 +197,24 @@ namespace ProjectGameDev.Entities.HeroDesign
             }
             else 
             {
-                if (animationManager.currentAnimation.NLoops >= 1)
+                if (_animationManager.currentAnimation.NLoops >= 1)
                 {
-                    animationManager.currentAnimation.NLoops = 0;
-                    animationManager.currentAnimation.IsComplete = false;
+                    _animationManager.currentAnimation.NLoops = 0;
+                    _animationManager.currentAnimation.IsComplete = false;
                     Action = ActionState.idle;
-                    animationManager.currentAnimation = animationManager.GetAnimation(ActionState.idle); // Set idle animation
+                    _animationManager.currentAnimation = _animationManager.GetAnimation(ActionState.idle); 
                 }
 
-
-
             }
+            
             Move();
             UpdateBoundingBox();
             Fall();
 
 
 
-            animationManager.Update(gameTime, Action);
-
-
-
-
+            _animationManager.Update(gameTime, Action);
+            this.Healthbar.Update(gameTime);
 
         }
 
@@ -264,47 +227,12 @@ namespace ProjectGameDev.Entities.HeroDesign
             }
             else
             {
-                AttackHitbox = new Rectangle(BoundingBox.Right - 60, BoundingBox.Y, 180, 130);
-            }
-
-        }
-
-
-
-        public void Fall()
-        {
-            if (Action == ActionState.attack)
-            {
-                if (Position.Y == GroundLevel - attackHeight * 3) return;
-
-                if (Position.Y > GroundLevel - attackHeight * 3)
-                {
-                    Gravity = new Vector2(0, 1);
-                    Position.Y = GroundLevel - attackHeight * 3;
-                    Speed.Y = 0;
-                    GravityAcceleration = new Vector2(0, 0.1f);
-                }
-                else
-                {
-                    if (Gravity.Y < TerminalVelocity.Y)
-                    {
-                        Gravity += GravityAcceleration;
-                    }
-
-                    Speed += Gravity;
-
-
-                }
-
-            }
-            else
-            {
-                base.Fall();
-
+                AttackHitbox = new Rectangle(BoundingBox.Right + 60, BoundingBox.Y, 180, 130);
             }
 
 
         }
+
        
 
         public override void TakeDamage()
@@ -323,11 +251,11 @@ namespace ProjectGameDev.Entities.HeroDesign
 
         
 
-        public override void AttackEnemy(Enemy target)
+        public override void Attack(Entity target)
         {
             if (Action == ActionState.attack)
             {
-                base.AttackEnemy(target);
+                base.Attack(target);
             }
 
         }

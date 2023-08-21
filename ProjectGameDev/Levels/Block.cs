@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ProjectGameDev.Entities;
 using ProjectGameDev.Interfaces;
@@ -29,10 +30,10 @@ namespace ProjectGameDev
         private int _width = 15;
         private int _height = 15;
 
-        public Block(Texture2D texture, int typeBlock, Vector2 positionBlock)
+        public Block(ContentManager content, int typeBlock, Vector2 positionBlock)
         {
             _type = typeBlock;
-            Texture = texture;
+            Texture = content.Load<Texture2D>("Levels/tilesMarioWorld");
             Position = positionBlock;
             if (_type != 0)
             {

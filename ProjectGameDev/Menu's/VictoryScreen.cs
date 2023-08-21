@@ -8,13 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using ProjectGameDev.Interfaces;
 using ProjectGameDev.Menu_s;
+using Microsoft.Xna.Framework.Content;
 
 namespace ProjectGameDev
 {
     internal class VictoryScreen: DefaultMenu,  IGameObject
     {
         
-        public VictoryScreen(Texture2D menuTexture, SpriteFont font): base(menuTexture, font)
+        public VictoryScreen(ContentManager content) : base(content)
         {
         }
 
@@ -50,12 +51,10 @@ namespace ProjectGameDev
         {
             spriteBatch.Draw(Texture, Position, MainMenu, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
             spriteBatch.Draw(Texture, PositionItem1, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
-            spriteBatch.Draw(Texture, PositionItem2, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
             spriteBatch.Draw(Texture, PositionItem3, MenuItem, Color.White * 0.9f, 0, new Vector2(1, 1), new Vector2(1, 1), SpriteEffect, 0);
 
             spriteBatch.DrawString(Font, "CONGRATULATIONS", new Vector2(PositionItem1.X - 290, PositionItem1.Y - 150), Color.White, 0, Vector2.Zero, new Vector2(3, 3), SpriteEffect, 0);
             spriteBatch.DrawString(Font, "RETRY", new Vector2(PositionItem1.X + 55, PositionItem1.Y + 25), Color.Black);
-            spriteBatch.DrawString(Font, "CREDITS", new Vector2(PositionItem2.X + 35, PositionItem2.Y + 25), Color.Black);
             spriteBatch.DrawString(Font, "EXIT", new Vector2(PositionItem3.X + 65, PositionItem3.Y + 25), Color.Black);
 
         }

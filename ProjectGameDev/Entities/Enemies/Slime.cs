@@ -31,8 +31,6 @@ namespace ProjectGameDev
     }
     internal class Slime:Enemy
     {
-        private AnimationManager animationManager = new AnimationManager();
-
 
         public Slime(Vector2 spawnLocation, ContentManager content)
         {
@@ -57,8 +55,8 @@ namespace ProjectGameDev
             TerminalVelocity = new Vector2(0, 10);
 
 
-            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/slime_idle2"), ActionState.run, 20, 30, 80, Width, Height, 7, BoundingBox);
-            animationManager.currentAnimation = animationManager.GetAnimation(ActionState.run);
+            _animationManager.AddAnimation(content.Load<Texture2D>("Enemies/slime_idle2"), ActionState.run, 20, 30, 80, Width, Height, 7);
+            _animationManager.currentAnimation = _animationManager.GetAnimation(ActionState.run);
 
         }
 
@@ -77,21 +75,21 @@ namespace ProjectGameDev
             switch (Action)
             {
                 case ActionState.run:
-                    //movement
                     Move();
                     Fall();
                     UpdateBoundingBox();
-                    animationManager.currentAnimation.Update(gameTime);
+                    _animationManager.currentAnimation.Update(gameTime);
                     break;
                 case ActionState.hit:
                     Action = ActionState.death;
                     break;
                 case ActionState.death:
+                    
                     break;
 
             }
 
-            animationManager.Update(gameTime, Action);
+            _animationManager.Update(gameTime, Action);
         }
 
         public override void UpdateBoundingBox()
@@ -104,27 +102,24 @@ namespace ProjectGameDev
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            switch (Action)
+            if (Action != ActionState.death)
             {
-                case ActionState.run:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                case ActionState.death:
-                    break;
+                spriteBatch.Draw(_animationManager.currentAnimation.texture, Position, _animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
             }
-            
         }
-            
+
         public override void Reset()
         {
             Health = 1;
             Action = ActionState.run;
         }
-
         public override void CheckForHero(Hero target)
         {
+
         }
 
-     
+
+
+
     }
 }

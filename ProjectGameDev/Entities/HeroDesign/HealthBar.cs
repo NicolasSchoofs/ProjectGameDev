@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ProjectGameDev.Interfaces;
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
@@ -12,12 +13,12 @@ namespace ProjectGameDev.Entities.HeroDesign
         private int schijfOp = 100;
         private int Health;
         
-        public HealthBar(Texture2D HeartTexture, int nHearts)
+        public HealthBar(ContentManager content, int nHearts)
         {
             Health = nHearts * 2;
             for (int i = 0; i < nHearts; i++)
             {
-                hearts.Add(new Heart(HeartTexture, new Vector2(20 + schijfOp * i,20)));
+                hearts.Add(new Heart(content.Load<Texture2D>("Hero/Heart"), new Vector2(20 + schijfOp * i,20)));
             }
         }
 

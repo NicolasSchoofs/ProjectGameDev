@@ -13,13 +13,20 @@ using ProjectGameDev.Entities;
 using ProjectGameDev.Entities.Animation;
 using ProjectGameDev.Entities.HeroDesign;
 using ProjectGameDev.Interfaces;
+using ProjectGameDev.Entities.Combat;
 
 namespace ProjectGameDev.Enemies
 {
     internal abstract class Enemy : Entity, IGameObject
     {
-
+        private CombatManager _combatManager;
         public State State;
+
+
+        public Enemy()
+        {
+            _combatManager = new CombatManager();
+        }
         public override bool Collision(Block target)
         {
             bool intersects = BoundingBox.Intersects(target.BoundingBox);
@@ -32,20 +39,20 @@ namespace ProjectGameDev.Enemies
         public override void CollisionWithBlock(Block target)
         {
             //floor collision
-            if (Position.Y + Height * 3 - 50 <= target.Position.Y)
+            if (BoundingBox.Bottom <= target.BoundingBox.Bottom)
             {
-                Position.Y = target.Position.Y - Height * 3 + 1;
+                Position.Y = target.Position.Y - offset.Y - Height * 3 + 1;
                 GroundLevel = Convert.ToInt16(target.Position.Y);
 
             }
             //right wall collision
-            else if (BoundingBox.Right >= target.BoundingBox.Left && BoundingBox.Right <= target.BoundingBox.Left + 30)
+            else if (BoundingBox.Right >= target.BoundingBox.Left && BoundingBox.Right <= target.BoundingBox.Right)
             {
                 State = State.left;
                 SpriteEffect = SpriteEffects.FlipHorizontally;
             }
             //left wall collision
-            else if (BoundingBox.Left <= target.BoundingBox.Right && Position.X >= target.BoundingBox.Right - 20)
+            else if (BoundingBox.Left <= target.BoundingBox.Right && Position.X >= target.BoundingBox.Left)
             {
                 State = State.right;
                 SpriteEffect = SpriteEffects.None;
@@ -58,6 +65,7 @@ namespace ProjectGameDev.Enemies
 
             }
         }
+
 
         public virtual void Reset()
         {
@@ -97,20 +105,11 @@ namespace ProjectGameDev.Enemies
 
         public virtual bool CheckForAttackCollision(Hero target)
         {
-            if (Action == ActionState.death || Action == ActionState.hit)
-            {
-                return false;
-            }
-            bool intersects = AttackHitbox.Intersects(target.BoundingBox);
-            if (intersects)
-            {
-                Collided = true;
-            }
-            return intersects;
+            return _combatManager.CheckForAttackCollision(this, target);
         }
         public virtual void AttackHero(Hero target)
         {
-            target.TakeDamage();
+            _combatManager.Attack(this, target);
         }
 
         public override void Move()
@@ -144,6 +143,6 @@ namespace ProjectGameDev.Enemies
             }
         }
 
-
+      
     }
 }

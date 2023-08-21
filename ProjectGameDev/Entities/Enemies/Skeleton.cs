@@ -19,33 +19,25 @@ namespace ProjectGameDev
 {
     internal class Skeleton: Enemy
     {
-        private AnimationManager animationManager = new AnimationManager();
-
-
-
-        private int _startX = 0, _startY = 140;
-        private int _schuifOpX = 64, _schuifOpY = 0;
-
-        
-        private int _attackStartX = 5, _attackStartY = 10;
-
-
+        private int animationDimentions = 64;
 
         public Skeleton(Vector2 spawnLocation, ContentManager content)
         {
-            Width = 45;
+            offset = new Vector2(60, 40);
+            Width = 15;
             Height = 37;
             State = State.right;
             GroundLevel = 9999;
             WallRight = 9999;
             WallLeft = 0;
-            
+
+
 
             SpriteEffect = SpriteEffects.FlipHorizontally;
             RunningSpeed =  5;
 
             Position = spawnLocation;
-            BoundingBox = new Rectangle(Convert.ToInt16(Position.X), Convert.ToInt16(Position.Y), Width * 3, Height * 3);
+            BoundingBox = new Rectangle(Convert.ToInt16(Position.X) + Convert.ToInt16(offset.X), Convert.ToInt16(Position.Y) + Convert.ToInt16(offset.Y), Width * 3, Height * 3);
             AttackHitbox = new Rectangle(Convert.ToInt16(BoundingBox.Right), Convert.ToInt16(BoundingBox.Y), 30, 50);
             Speed = new Vector2(1, 1);
             Gravity = new Vector2(0, 1);
@@ -55,11 +47,11 @@ namespace ProjectGameDev
 
 
 
-            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.run, _startX, _startY, _schuifOpX, Width, Height, 12, BoundingBox);
-            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.attack, _startX, _attackStartY, _schuifOpX, 65, Height, 9, BoundingBox);
-            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.hit, _startX, 268, _schuifOpX, 65, Height, 3, BoundingBox);
-            animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.death, _startX, 75, _schuifOpX, 70, Height, 12, BoundingBox);
-            animationManager.currentAnimation = animationManager.GetAnimation(ActionState.run);
+            _animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.run, 0, animationDimentions * 2, animationDimentions, animationDimentions, animationDimentions, 12);
+            _animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.attack, 0, 0, animationDimentions, animationDimentions, animationDimentions, 9);
+            _animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.hit, 0, animationDimentions * 4, animationDimentions, animationDimentions, animationDimentions, 3);
+            _animationManager.AddAnimation(content.Load<Texture2D>("Enemies/Skeleton"), ActionState.death, 0, animationDimentions, animationDimentions, animationDimentions, animationDimentions, 12);
+            _animationManager.currentAnimation = _animationManager.GetAnimation(ActionState.run);
 
         }
         public override void Update(GameTime gameTime)
@@ -79,25 +71,25 @@ namespace ProjectGameDev
                     Fall();
                     Move();
                     UpdateBoundingBox();
-                    animationManager.currentAnimation.Update(gameTime);
+                    _animationManager.currentAnimation.Update(gameTime);
                     break;
                 case ActionState.attack:
-                    animationManager.currentAnimation.Update(gameTime);
+                    _animationManager.currentAnimation.Update(gameTime);
                     break;
                 case ActionState.hit:
-                    if (!(animationManager.currentAnimation.NLoops >= 6))
+                    if (!(_animationManager.currentAnimation.NLoops >= 6))
                     {
-                        animationManager.currentAnimation.Update(gameTime);
+                        _animationManager.currentAnimation.Update(gameTime);
                     }
                     else
                     {
-                        animationManager.currentAnimation.NLoops = 0;
+                        _animationManager.currentAnimation.NLoops = 0;
                         if (Health > 0)
                         {
-                            if (animationManager.currentAnimation.IsComplete)
+                            if (_animationManager.currentAnimation.IsComplete)
                             {
-                                animationManager.currentAnimation.NLoops = 0;
-                                animationManager.currentAnimation.IsComplete = false;
+                                _animationManager.currentAnimation.NLoops = 0;
+                                _animationManager.currentAnimation.IsComplete = false;
                                 Action = ActionState.run;
                             }
                         }
@@ -109,15 +101,15 @@ namespace ProjectGameDev
                     }
                     break;
                 case ActionState.death:
-                    if (!(animationManager.currentAnimation.NLoops >= 1))
+                    if (!(_animationManager.currentAnimation.NLoops >= 1))
                     {
-                        animationManager.currentAnimation.Update(gameTime);
+                        _animationManager.currentAnimation.Update(gameTime);
                     }
                     break;
             }
 
 
-            animationManager.Update(gameTime, Action);
+            _animationManager.Update(gameTime, Action);
         }
 
 
@@ -134,47 +126,6 @@ namespace ProjectGameDev
             else
             {
                 AttackHitbox = new Rectangle(BoundingBox.Right - 60, BoundingBox.Y, 130, 130);
-            }
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            switch (Action)
-            {
-                case ActionState.run:
-                    spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    break;
-                case ActionState.attack:
-                    if (State == State.left)
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 40, Position.Y), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    break;
-                case ActionState.death:
-                    if (State == State.left)
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 50, Position.Y), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    break;
-                case ActionState.hit:
-                    if (State == State.left)
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, new Vector2(Position.X - 50, Position.Y), animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(animationManager.currentAnimation.texture, Position, animationManager.currentAnimation.CurrentFrame.SourceRectangle, Color.White, 0, new Vector2(1, 1), new Vector2(3, 3), SpriteEffect, 0);
-                    }
-                    
-                    break;
             }
         }
 

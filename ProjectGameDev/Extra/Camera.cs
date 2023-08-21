@@ -16,23 +16,22 @@ namespace ProjectGameDev.Extra
     {
         public Matrix Transform { get; private set; }
 
+        private float deadZoneWidthPercent = 0.7f; 
+
         public void Follow(Hero target)
         {
-            var Position = Matrix.CreateTranslation(
-                -target.Position.X - target.Width * 3 / 2,
-                -target.Position.Y - target.Height * 3 / 2,
-                0);
+            float deadZoneWidth = Game1.ScreenWidth * deadZoneWidthPercent;
 
-            var offset = Matrix.CreateTranslation(
-                Game1.ScreenWidth / 2,
-                Game1.ScreenHeight / 2,
-                0);
+            float targetX = target.Position.X - deadZoneWidth / 2;
+            float targetY = target.Position.Y - Game1.ScreenHeight / 2;
 
-            Transform = Position * offset;
+            
+            float cameraX = MathHelper.Clamp(targetX, 0, float.MaxValue);
+            float cameraY = MathHelper.Clamp(targetY, 0, float.MaxValue);
 
+            var Position = Matrix.CreateTranslation(-cameraX, -cameraY, 0);
 
-
-
+            Transform = Position;
         }
     }
 }

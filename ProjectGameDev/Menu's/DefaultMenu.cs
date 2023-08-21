@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using System.Reflection.Metadata;
 
 namespace ProjectGameDev.Menu_s
 {
@@ -21,7 +23,7 @@ namespace ProjectGameDev.Menu_s
         public int Width = 280, Height = 380;
         public Vector2 Position;
         public Vector2 PositionItem1, PositionItem2, PositionItem3;
-        public DefaultMenu(Texture2D menuTexture, SpriteFont font)
+        public DefaultMenu(ContentManager content)
         {
             PositionItem1 = new Vector2(Game1.ScreenWidth / 2 - Width / 2 + 40, Game1.ScreenHeight / 2 - Height / 2 + 50);
             PositionItem2 = new Vector2(Game1.ScreenWidth / 2 - Width / 2 + 40, Game1.ScreenHeight / 2 - Height / 2 + 150);
@@ -32,8 +34,8 @@ namespace ProjectGameDev.Menu_s
             Hitbox3 = new Rectangle(Convert.ToInt16(PositionItem3.X), Convert.ToInt16(PositionItem3.Y), 195, 80);
             MenuItem = new Rectangle(310, 283, 195, 80);
             
-            this.Font = font;
-            Texture = menuTexture;
+            Font = content.Load<SpriteFont>("Font"); ;
+            Texture = content.Load<Texture2D>("Menu/Menu");
             
             Position = new Vector2(Game1.ScreenWidth / 2 - Width / 2, Game1.ScreenHeight / 2 - Height / 2);
             MainMenu = new Rectangle(30, 220, Width, Height);

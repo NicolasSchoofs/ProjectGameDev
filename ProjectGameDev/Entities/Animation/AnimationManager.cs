@@ -19,7 +19,7 @@ namespace ProjectGameDev.Entities.Animation
             animations = new List<Animations.Animation>();
 
         }
-        public void AddAnimation(Texture2D texture, ActionState actionState,int startX, int startY, int schuifOp, int width, int height, int amount, Rectangle boundingBox)
+        public void AddAnimation(Texture2D texture, ActionState actionState,int startX, int startY, int schuifOp, int width, int height, int amount)
         {
             var animation = new Animations.Animation(texture);
             animation.AddFrames(startX, startY, schuifOp, width, height, amount);
@@ -54,17 +54,14 @@ namespace ProjectGameDev.Entities.Animation
                         currentAnimation.NLoops++;
                         if (currentAnimation.NLoops >= currentAnimation.MaxLoops)
                         {
-                            // Perform any necessary actions after the animation loops
                             if (actionState == ActionState.hit)
                             {
-                                // Handle hit animation looping completion
 
                                 currentActionState = ActionState.idle;
                                 currentAnimation = animations.Find(a => a.ActionState == ActionState.idle);
                             }
                             else if (actionState == ActionState.death)
                             {
-                                // Handle death animation looping completion
                                 Game1.GameState = GameState.death;
                             }
                         }
